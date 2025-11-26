@@ -715,6 +715,57 @@
             window.scrollTo(0, 0);
             render(); 
             }
+        async function handleLogin(e) {
+            e.preventDefault();
+
+            // 1. Pegar os elementos
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const btn = e.target.querySelector('button');
+            const errorDiv = document.getElementById('login-error');
+
+            // 2. Feedback Visual (Muda botão para "Carregando...")
+            const originalBtnContent = btn.innerHTML;
+            btn.innerHTML = '<div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>';
+            btn.disabled = true; // Impede cliques múltiplos
+            
+            // Limpa erros anteriores
+            errorDiv.classList.add('hidden');
+            errorDiv.textContent = '';
+
+            try {
+                // 3. Tenta fazer o login no Supabase
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                // 4. Se houver erro, joga para o bloco catch
+                if (error) throw error;
+
+                // Se der certo, o onAuthStateChange no init() vai recarregar a tela automaticamente.
+                // Mas podemos forçar um reload se quiser garantir:
+                // window.location.reload(); 
+
+            } catch (err) {
+                // 5. TRATAMENTO DE ERRO
+                console.error("Erro detalhado:", err);
+                
+                // Restaura o botão
+                btn.innerHTML = originalBtnContent;
+                btn.disabled = false;
+
+                // Traduz erros comuns do Supabase
+                let msg = err.message;
+                if (msg.includes("Invalid login credentials")) msg = "E-mail ou senha incorretos.";
+                if (msg.includes("Email not confirmed")) msg = "E-mail não confirmado. Verifique sua caixa de entrada.";
+                if (msg.includes("rate limit")) msg = "Muitas tentativas. Aguarde um pouco.";
+
+                // Mostra o erro na tela
+                errorDiv.textContent = msg;
+                errorDiv.classList.remove('hidden');
+            }
+        }
         async function handleLogout() { await supabase.auth.signOut(); }
 
         // CRUD SERVIÇOS
@@ -1453,6 +1504,7 @@ window.applyDashFilters = () => {
     </script>
 </body>
 </html>
+
 
 
 
