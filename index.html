@@ -485,28 +485,95 @@
                                 </div>
 
                                 <div>
-                                    <label class="text-sm font-medium text-stone-400 mb-3 block">Cor de Destaque</label>
-                                    <div class="flex gap-4">
-                                        <label class="cursor-pointer group">
-                                            <input type="radio" name="color" value="amber" class="hidden color-radio" checked>
-                                            <div class="w-10 h-10 rounded-full bg-amber-500 border-2 border-transparent group-hover:scale-110 transition-all"></div>
-                                            <span class="text-xs text-center block mt-1 text-stone-500">Ouro</span>
-                                        </label>
-                                        <label class="cursor-pointer group">
-                                            <input type="radio" name="color" value="emerald" class="hidden color-radio">
-                                            <div class="w-10 h-10 rounded-full bg-emerald-500 border-2 border-transparent group-hover:scale-110 transition-all"></div>
-                                            <span class="text-xs text-center block mt-1 text-stone-500">Verde</span>
-                                        </label>
-                                        <label class="cursor-pointer group">
-                                            <input type="radio" name="color" value="rose" class="hidden color-radio">
-                                            <div class="w-10 h-10 rounded-full bg-rose-500 border-2 border-transparent group-hover:scale-110 transition-all"></div>
-                                            <span class="text-xs text-center block mt-1 text-stone-500">Vermelho</span>
-                                        </label>
-                                        <label class="cursor-pointer group">
-                                            <input type="radio" name="color" value="stone" class="hidden color-radio">
-                                            <div class="w-10 h-10 rounded-full bg-stone-500 border-2 border-transparent group-hover:scale-110 transition-all"></div>
-                                            <span class="text-xs text-center block mt-1 text-stone-500">Cinza</span>
-                                        </label>
+                                    <label class="text-sm font-medium text-stone-400 mb-3 flex justify-between">
+                                        <span>Cor de Destaque</span>
+                                        <span class="text-[10px] uppercase tracking-wider text-stone-600 font-bold">Selecione o tom</span>
+                                    </label>
+                                    
+                                    <div class="glass-panel p-4 rounded-xl border border-stone-800 bg-[#0c0a09]">
+                                        <div class="grid grid-cols-6 sm:grid-cols-8 gap-3 justify-items-center">
+                                            
+                                            <label class="cursor-pointer group relative">
+                                                <input type="radio" name="color" value="amber" class="hidden color-radio" checked>
+                                                <div class="w-8 h-8 rounded-full bg-amber-500 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#f59e0b] transition-all"></div>
+                                            </label>
+
+                                            <label class="cursor-pointer group relative">
+                                                <input type="radio" name="color" value="orange" class="hidden color-radio">
+                                                <div class="w-8 h-8 rounded-full bg-orange-500 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#f97316] transition-all"></div>
+                                            </label>
+
+                                            <label class="cursor-pointer group relative">
+                                                <input type="radio" name="color" value="red" class="hidden color-radio">
+                                                <div class="w-8 h-8 rounded-full bg-red-600 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#dc2626] transition-all"></div>
+                                            </label>
+
+                                            <label class="cursor-pointer group relative">
+                                                <input type="radio" name="color" value="rose" class="hidden color-radio">
+                                                <div class="w-8 h-8 rounded-full bg-rose-500 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#f43f5e] transition-all"></div>
+                                            </label>
+
+                                            <label class="cursor-pointer group relative">
+                                                <input type="radio" name="color" value="fuchsia" class="hidden color-radio">
+                                                <div class="w-8 h-8 rounded-full bg-fuchsia-600 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#c026d3] transition-all"></div>
+                                            </label>
+
+                                            <label class="cursor-pointer group relative">
+                                                <input type="radio" name="color" value="purple" class="hidden color-radio">
+                                                <div class="w-8 h-8 rounded-full bg-purple-600 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#9333ea] transition-all"></div>
+                                            </label>
+
+                                            <label class="cursor-pointer group relative">
+                                                <input type="radio" name="color" value="violet" class="hidden color-radio">
+                                                <div class="w-8 h-8 rounded-full bg-violet-600 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#7c3aed] transition-all"></div>
+                                            </label>
+
+                                            <label class="cursor-pointer group relative">
+                                                <input type="radio" name="color" value="indigo" class="hidden color-radio">
+                                                <div class="w-8 h-8 rounded-full bg-indigo-500 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#6366f1] transition-all"></div>
+                                            </label>
+
+                                            <label class="cursor-pointer group relative">
+                                                <input type="radio" name="color" value="blue" class="hidden color-radio">
+                                                <div class="w-8 h-8 rounded-full bg-blue-500 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#3b82f6] transition-all"></div>
+                                            </label>
+
+                                            <label class="cursor-pointer group relative">
+                                                <input type="radio" name="color" value="cyan" class="hidden color-radio">
+                                                <div class="w-8 h-8 rounded-full bg-cyan-500 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#06b6d4] transition-all"></div>
+                                            </label>
+
+                                            <label class="cursor-pointer group relative">
+                                                <input type="radio" name="color" value="teal" class="hidden color-radio">
+                                                <div class="w-8 h-8 rounded-full bg-teal-500 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#14b8a6] transition-all"></div>
+                                            </label>
+
+                                            <label class="cursor-pointer group relative">
+                                                <input type="radio" name="color" value="emerald" class="hidden color-radio">
+                                                <div class="w-8 h-8 rounded-full bg-emerald-500 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#10b981] transition-all"></div>
+                                            </label>
+                                            
+                                            <label class="cursor-pointer group relative">
+                                                <input type="radio" name="color" value="green" class="hidden color-radio">
+                                                <div class="w-8 h-8 rounded-full bg-green-500 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#22c55e] transition-all"></div>
+                                            </label>
+                                            
+                                            <label class="cursor-pointer group relative">
+                                                <input type="radio" name="color" value="lime" class="hidden color-radio">
+                                                <div class="w-8 h-8 rounded-full bg-lime-500 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#84cc16] transition-all"></div>
+                                            </label>
+
+                                            <label class="cursor-pointer group relative">
+                                                <input type="radio" name="color" value="stone" class="hidden color-radio">
+                                                <div class="w-8 h-8 rounded-full bg-stone-500 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#78716c] transition-all"></div>
+                                            </label>
+                                            
+                                            <label class="cursor-pointer group relative">
+                                                <input type="radio" name="color" value="slate" class="hidden color-radio">
+                                                <div class="w-8 h-8 rounded-full bg-slate-500 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#64748b] transition-all"></div>
+                                            </label>
+
+                                        </div>
                                     </div>
                                 </div>
 
@@ -1225,6 +1292,7 @@ window.applyDashFilters = () => {
     </script>
 </body>
 </html>
+
 
 
 
