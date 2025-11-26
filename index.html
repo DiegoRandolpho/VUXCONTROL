@@ -156,10 +156,11 @@
         // --- INIT ---
         async function init() {
             try {
-                const path = window.location.pathname; 
-                const hash = window.location.hash;     
+                const path = window.location.pathname.toLowerCase(); 
+                const hash = window.location.hash.toLowerCase();      
                 const params = new URLSearchParams(window.location.search); 
 
+                // Verifica se é modo catálogo (independente de maiúscula/minúscula)
                 if (path.includes('catalogo') || hash.includes('catalogo') || params.get('mode') === 'catalogo') {
                     state.isPublicCatalog = true;
                     render();
@@ -167,12 +168,15 @@
                     return; 
                 }
 
+                // Se não for catálogo, verifica sessão de admin
                 const { data: { session } } = await supabase.auth.getSession();
                 state.user = session?.user || null;
+                
                 supabase.auth.onAuthStateChange((_event, session) => {
                     state.user = session?.user || null;
                     render();
                 });
+                
                 render();
             } catch (err) {
                 console.error("Erro init:", err);
@@ -261,6 +265,9 @@
         }
 
         function AppLayout() {
+            // Link dinâmico para a loja (usa a URL atual + ?mode=catalogo)
+            const publicLink = `${window.location.origin}${window.location.pathname}?mode=catalogo`;
+
             return `
                 <div class="flex min-h-screen">
                     <aside class="fixed left-0 top-0 h-full w-72 bg-[#0c0a09]/95 border-r border-amber-900/20 hidden md:flex flex-col z-30 backdrop-blur-xl">
@@ -273,14 +280,23 @@
                         <nav class="flex-1 px-4 py-8 space-y-2">
                             ${NavButton('dashboard', 'chart-pie-slice', 'Dashboard')}
                             ${NavButton('finance', 'wallet', 'Financeiro')}
-                            ${NavButton('services', 'briefcase', 'Catálogo')}
-                            ${NavButton('agenda', 'calendar-check', 'Agenda')}
+                            ${NavButton('services', 'briefcase', 'Gerenciar Catálogo')} ${NavButton('agenda', 'calendar-check', 'Agenda')}
                             ${NavButton('control', 'kanban', 'Produção')}
                         </nav>
+                        
+                        <div class="px-4 pb-2">
+                            <a href="${publicLink}" target="_blank" class="flex items-center gap-3 px-4 py-3.5 rounded-xl border border-amber-500/20 bg-amber-500/5 text-amber-500 hover:bg-amber-500 hover:text-black transition-all group shadow-lg shadow-amber-900/10">
+                                <i class="ph ph-storefront text-lg"></i>
+                                <span class="font-bold text-sm tracking-wide uppercase">Ver Loja Online</span>
+                                <i class="ph ph-arrow-square-out ml-auto opacity-50 group-hover:opacity-100"></i>
+                            </a>
+                        </div>
+
                         <div class="p-4 border-t border-amber-900/10">
                             <button onclick="handleLogout()" class="flex items-center gap-3 text-stone-500 hover:text-red-400 hover:bg-red-950/10 w-full px-4 py-3.5 rounded-xl transition-all group"><i class="ph ph-sign-out text-lg"></i><span class="font-medium text-sm">Sair</span></button>
                         </div>
                     </aside>
+
                     <div class="md:hidden fixed top-0 w-full glass-panel border-x-0 border-t-0 border-b border-amber-900/20 z-50 px-4 h-16 flex items-center justify-between bg-[#0a0a0a]/90">
                         <div class="flex items-center gap-3">
                             <div class="w-8 h-8 rounded border border-amber-500/30 p-0.5"><img src="${LOGO_URL}" class="w-full h-full object-cover"></div>
@@ -288,16 +304,25 @@
                         </div>
                         <button onclick="toggleMobileMenu()" class="text-amber-500 p-2 bg-amber-900/10 rounded-lg hover:bg-amber-900/20"><i class="ph ph-list text-2xl"></i></button>
                     </div>
+
                     <main class="flex-1 md:pl-72 pt-20 md:pt-0 min-h-screen relative">
                         <div class="max-w-7xl mx-auto p-4 sm:p-10 fade-in" id="main-content"></div>
                     </main>
+
                     <div id="mobile-menu" class="fixed inset-0 bg-[#0c0a09] z-40 pt-24 px-6 hidden fade-in">
                         <nav class="space-y-3">
                             ${NavButton('dashboard', 'chart-pie-slice', 'Dashboard', true)}
                             ${NavButton('finance', 'wallet', 'Financeiro', true)}
-                            ${NavButton('services', 'briefcase', 'Catálogo', true)}
+                            ${NavButton('services', 'briefcase', 'Gerenciar Catálogo', true)}
                             ${NavButton('agenda', 'calendar-check', 'Agenda', true)}
                             ${NavButton('control', 'kanban', 'Produção', true)}
+                            
+                            <div class="h-px bg-amber-900/20 my-6"></div>
+                            
+                            <a href="${publicLink}" target="_blank" class="w-full flex items-center gap-4 px-5 py-4 rounded-xl border border-amber-500/20 text-amber-500 font-bold uppercase tracking-wider text-sm">
+                                <i class="ph ph-storefront text-xl"></i> Ver Loja Online
+                            </a>
+
                             <div class="h-px bg-amber-900/20 my-6"></div>
                             <button onclick="handleLogout()" class="w-full flex items-center gap-3 px-4 py-4 text-red-400 bg-red-900/10 rounded-xl border border-red-900/20"><i class="ph ph-sign-out text-xl"></i> Sair</button>
                         </nav>
@@ -306,7 +331,6 @@
                 </div>
             `;
         }
-
         function NavButton(tabId, icon, label, isMobile = false) {
             const active = state.currentTab === tabId;
             const baseClass = isMobile 
@@ -1292,6 +1316,7 @@ window.applyDashFilters = () => {
     </script>
 </body>
 </html>
+
 
 
 
