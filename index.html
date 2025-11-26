@@ -26,7 +26,6 @@
         body { 
             font-family: 'Inter', sans-serif; 
             background-color: #0a0a0a; 
-            /* Gradiente mais quente e luxuoso */
             background-image: radial-gradient(circle at 50% 0%, #451a03 0%, #0a0a0a 75%); 
             background-attachment: fixed;
             color: #d6d3d1; /* Stone 300 */
@@ -44,16 +43,15 @@
         .fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Painéis de Vidro "Quente" (Warm Glass) */
+        /* Painéis de Vidro "Quente" */
         .glass-panel {
-            background: rgba(28, 25, 23, 0.65); /* Stone base mais presente */
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(217, 119, 6, 0.15); /* Borda sutil dourada */
+            background: rgba(28, 25, 23, 0.75); /* Mais opaco para legibilidade */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(217, 119, 6, 0.15);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
         
-        /* Cards com interação rica */
         .glass-card {
             background: rgba(41, 37, 36, 0.4);
             border: 1px solid rgba(120, 53, 15, 0.2);
@@ -61,19 +59,20 @@
         }
         .glass-card:hover {
             background: rgba(41, 37, 36, 0.8);
-            border-color: rgba(245, 158, 11, 0.4); /* Amber border on hover */
+            border-color: rgba(245, 158, 11, 0.4);
             transform: translateY(-4px);
             box-shadow: 0 15px 40px -10px rgba(217, 119, 6, 0.15);
         }
 
         .input-dark {
-            background: rgba(12, 10, 9, 0.6);
+            background: rgba(12, 10, 9, 0.8);
             border: 1px solid rgba(68, 64, 60, 0.5);
             color: #f5f5f4;
             transition: all 0.2s;
         }
         .input-dark:focus {
             border-color: #f59e0b;
+            background: rgba(12, 10, 9, 1);
             box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
             outline: none;
         }
@@ -92,7 +91,13 @@
             box-shadow: 0 0 25px rgba(217, 119, 6, 0.4);
         }
 
-        /* Scrollbar Customizada */
+        /* Radio Button Color Selector */
+        .color-radio:checked + div {
+            transform: scale(1.2);
+            border-color: white;
+            box-shadow: 0 0 15px currentColor;
+        }
+
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #44403c; border-radius: 10px; }
@@ -130,7 +135,7 @@
             agendaFilter: 'week',
             selectedDate: new Date().toISOString().split('T')[0],
             isPublicCatalog: false,
-            catalogFilter: 'all' // all, eventos, casamento, empresarial, avulso
+            catalogFilter: 'all'
         };
 
         // --- INIT ---
@@ -159,17 +164,15 @@
             }
         }
 
-        // --- VIEWS ---
+        // --- VIEWS PÚBLICAS ---
 
         function PublicCatalogView() {
             return `
                 <div class="min-h-screen pb-20 fade-in bg-[#0a0a0a]">
-                    <!-- Hero / Header -->
+                    <!-- Hero -->
                     <div class="relative h-[35vh] md:h-[45vh] overflow-hidden border-b border-amber-900/40 flex flex-col items-center justify-center">
                         <div class="absolute inset-0 bg-[#0a0a0a] z-0">
-                            <!-- Gradiente de fundo restaurado -->
                             <div class="absolute inset-0 bg-gradient-to-b from-[#451a03] via-[#291205] to-[#0a0a0a] opacity-90"></div>
-                            <!-- Efeito de partículas/textura sutil -->
                             <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#d97706 1px, transparent 1px); background-size: 40px 40px;"></div>
                         </div>
                         
@@ -182,7 +185,7 @@
                         </div>
                     </div>
 
-                    <!-- Navigation (Filtros) Sticky -->
+                    <!-- Navigation -->
                     <div class="sticky top-0 z-40 bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-amber-900/20 py-4 overflow-x-auto shadow-2xl">
                         <div class="container mx-auto px-4 flex justify-start md:justify-center gap-3 min-w-max pb-1">
                             ${CatalogFilterBtn('all', 'Todos')}
@@ -211,12 +214,12 @@
 
         function CatalogFilterBtn(key, label) {
             const isActive = state.catalogFilter === key;
-            // Botões com visual mais premium
             const activeClass = "bg-gradient-to-r from-amber-700 to-amber-600 text-white shadow-[0_0_15px_rgba(217,119,6,0.4)] border-amber-500";
             const inactiveClass = "bg-stone-900/40 text-stone-500 border-stone-800 hover:text-stone-200 hover:border-amber-900/50 hover:bg-stone-800/60";
-            
             return `<button onclick="filterCatalog('${key}')" class="px-6 py-2.5 rounded-full text-xs md:text-sm font-bold uppercase tracking-wider border transition-all duration-300 transform hover:scale-105 ${isActive ? activeClass : inactiveClass}">${label}</button>`;
         }
+
+        // --- VIEWS ADMIN ---
 
         function LoginView() {
             return `
@@ -319,13 +322,12 @@
             return `<button onclick="switchTab('${tabId}')" class="${baseClass}"><i class="ph ph-${icon} ${isMobile ? 'text-xl' : 'text-lg'}"></i><span>${label}</span></button>`;
         }
 
-        // --- RENDERIZADORES ---
+        // --- RENDERIZADORES DE DADOS ---
 
         function render() {
             const app = document.getElementById('app');
             if (state.isPublicCatalog) {
                 app.innerHTML = PublicCatalogView();
-                // Re-render content only if filtering
                 if(document.getElementById('public-catalog-content')) loadPublicCatalogData();
                 return;
             }
@@ -405,17 +407,13 @@
                 `;
             }
             html += `</div>`;
-            
-            // Empty state
             if(filtered.length === 0) html = `<div class="text-center py-20 text-stone-500 italic flex flex-col items-center"><i class="ph ph-magnifying-glass text-4xl mb-2 opacity-50"></i><p>Nenhum serviço encontrado nesta categoria.</p></div>`;
-
             container.innerHTML = html;
         }
 
         function filterCatalog(key) {
             state.catalogFilter = key;
-            // Update buttons UI
-            render(); // re-renders the whole public view logic
+            render();
         }
 
         // --- ADMIN LOGIC ---
@@ -428,12 +426,15 @@
                 form.querySelector('input[name="name"]').value = item.name;
                 form.querySelector('input[name="price"]').value = item.price;
                 form.querySelector('select[name="type"]').value = item.type;
-                // NEW CATEGORY FIELD
                 const catSelect = form.querySelector('select[name="category"]');
                 if(catSelect) catSelect.value = item.category || 'avulso';
                 
-                form.querySelector('select[name="color"]').value = item.color || 'amber';
-                form.querySelector('input[name="features"]').value = (item.features || []).join(', ');
+                // Color visual selector logic
+                const color = item.color || 'amber';
+                const colorInput = form.querySelector(`input[value="${color}"]`);
+                if(colorInput) colorInput.checked = true;
+
+                form.querySelector('textarea[name="features"]').value = (item.features || []).join(', ');
                 form.scrollIntoView({ behavior: 'smooth' });
             };
 
@@ -444,35 +445,97 @@
                         <button onclick="toggleServiceForm()" class="btn-gold px-6 py-3 rounded-xl flex items-center gap-2 text-sm font-bold shadow-lg tracking-wide uppercase"><i class="ph ph-plus-circle text-lg"></i> Novo Item</button>
                     </header>
 
-                    <div id="service-form" class="hidden glass-panel rounded-2xl p-8 border-t border-amber-500/30 mb-8">
-                         <h3 class="text-amber-500 font-bold mb-6 text-sm uppercase tracking-widest border-b border-white/5 pb-2">Editar / Criar</h3>
-                         <form onsubmit="handleServiceSubmit(event)" class="space-y-6">
+                    <!-- FORMULÁRIO LIMPO E OTIMIZADO -->
+                    <div id="service-form" class="hidden glass-panel rounded-2xl p-8 border-t border-amber-500/30 mb-12 shadow-2xl">
+                         <h3 class="text-white font-heading text-2xl mb-8 border-b border-white/10 pb-4 flex justify-between items-center">
+                            <span>Editor de Serviço</span>
+                            <button type="button" onclick="toggleServiceForm()" class="text-stone-500 hover:text-white transition-colors"><i class="ph ph-x"></i></button>
+                         </h3>
+                         
+                         <form onsubmit="handleServiceSubmit(event)" class="space-y-8">
                             <input type="hidden" name="id" value="">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div><label class="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-2 block">Nome</label><input type="text" name="name" placeholder="Ex: Pacote Pocket" class="input-dark px-4 py-3 rounded-xl w-full" required></div>
-                                <div><label class="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-2 block">Preço</label><input type="text" name="price" placeholder="Ex: 300,00" class="input-dark px-4 py-3 rounded-xl w-full" required></div>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                <div><label class="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-2 block">Categoria</label>
-                                    <select name="category" class="input-dark px-4 py-3 rounded-xl cursor-pointer w-full">
-                                        <option value="eventos">Eventos</option>
-                                        <option value="casamento">Casamentos</option>
-                                        <option value="empresarial">Empresarial</option>
-                                        <option value="avulso">Avulsos</option>
-                                    </select>
+                            
+                            <!-- Linha 1: Básico -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div class="md:col-span-2">
+                                    <label class="text-sm font-medium text-stone-400 mb-2 block">Nome do Serviço</label>
+                                    <input type="text" name="name" placeholder="Ex: Pacote Pocket" class="input-dark px-4 py-3 rounded-xl w-full text-lg text-white placeholder-stone-600" required>
                                 </div>
-                                <div><label class="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-2 block">Tipo Visual</label><select name="type" class="input-dark px-4 py-3 rounded-xl cursor-pointer w-full"><option value="plan">Card Grande</option><option value="single">Lista Simples</option></select></div>
-                                <div><label class="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-2 block">Cor</label><select name="color" class="input-dark px-4 py-3 rounded-xl cursor-pointer w-full"><option value="amber">Ouro</option><option value="emerald">Esmeralda</option><option value="rose">Rubi</option><option value="stone">Platina</option></select></div>
-                                <div><label class="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-2 block">Itens</label><input type="text" name="features" placeholder="Item 1, Item 2..." class="input-dark px-4 py-3 rounded-xl w-full"></div>
+                                <div>
+                                    <label class="text-sm font-medium text-stone-400 mb-2 block">Preço (Texto)</label>
+                                    <input type="text" name="price" placeholder="R$ 300,00" class="input-dark px-4 py-3 rounded-xl w-full text-lg text-amber-400 font-bold placeholder-stone-600" required>
+                                </div>
                             </div>
-                            <div class="flex justify-end gap-3 pt-4 border-t border-white/5">
-                                <button type="button" onclick="toggleServiceForm()" class="text-stone-500 hover:text-stone-300 px-4 py-2 text-xs font-bold uppercase tracking-wider">Cancelar</button>
-                                <button type="submit" class="btn-gold px-8 py-3 rounded-xl font-bold text-sm tracking-wide">SALVAR</button>
+
+                            <!-- Linha 2: Categoria e Visual -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="text-sm font-medium text-stone-400 mb-2 block">Categoria</label>
+                                    <div class="relative">
+                                        <select name="category" class="input-dark px-4 py-3 rounded-xl w-full appearance-none cursor-pointer">
+                                            <option value="eventos">Eventos</option>
+                                            <option value="casamento">Casamentos</option>
+                                            <option value="empresarial">Empresarial</option>
+                                            <option value="avulso">Avulsos / Adicionais</option>
+                                        </select>
+                                        <i class="ph ph-caret-down absolute right-4 top-1/2 -translate-y-1/2 text-stone-500 pointer-events-none"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-sm font-medium text-stone-400 mb-2 block">Estilo do Card</label>
+                                    <div class="relative">
+                                        <select name="type" class="input-dark px-4 py-3 rounded-xl w-full appearance-none cursor-pointer">
+                                            <option value="plan">Pacote (Card Grande)</option>
+                                            <option value="single">Simples (Lista)</option>
+                                        </select>
+                                        <i class="ph ph-caret-down absolute right-4 top-1/2 -translate-y-1/2 text-stone-500 pointer-events-none"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Linha 3: Cor Destaque (Visual) -->
+                            <div>
+                                <label class="text-sm font-medium text-stone-400 mb-3 block">Cor de Destaque</label>
+                                <div class="flex gap-4">
+                                    <label class="cursor-pointer group">
+                                        <input type="radio" name="color" value="amber" class="hidden color-radio" checked>
+                                        <div class="w-10 h-10 rounded-full bg-amber-500 border-2 border-transparent group-hover:scale-110 transition-all"></div>
+                                        <span class="text-xs text-center block mt-1 text-stone-500">Ouro</span>
+                                    </label>
+                                    <label class="cursor-pointer group">
+                                        <input type="radio" name="color" value="emerald" class="hidden color-radio">
+                                        <div class="w-10 h-10 rounded-full bg-emerald-500 border-2 border-transparent group-hover:scale-110 transition-all"></div>
+                                        <span class="text-xs text-center block mt-1 text-stone-500">Verde</span>
+                                    </label>
+                                    <label class="cursor-pointer group">
+                                        <input type="radio" name="color" value="rose" class="hidden color-radio">
+                                        <div class="w-10 h-10 rounded-full bg-rose-500 border-2 border-transparent group-hover:scale-110 transition-all"></div>
+                                        <span class="text-xs text-center block mt-1 text-stone-500">Vermelho</span>
+                                    </label>
+                                    <label class="cursor-pointer group">
+                                        <input type="radio" name="color" value="stone" class="hidden color-radio">
+                                        <div class="w-10 h-10 rounded-full bg-stone-500 border-2 border-transparent group-hover:scale-110 transition-all"></div>
+                                        <span class="text-xs text-center block mt-1 text-stone-500">Cinza</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Linha 4: Itens -->
+                            <div>
+                                <label class="text-sm font-medium text-stone-400 mb-2 block">Itens Inclusos (Features)</label>
+                                <textarea name="features" rows="3" placeholder="Ex: 2 Reels, 1 Arte, Cobertura Completa (Separe por vírgulas)" class="input-dark px-4 py-3 rounded-xl w-full resize-none leading-relaxed"></textarea>
+                                <p class="text-xs text-stone-600 mt-1">Separe cada item com uma vírgula.</p>
+                            </div>
+
+                            <!-- Botões -->
+                            <div class="flex justify-end gap-4 pt-6 border-t border-white/5">
+                                <button type="button" onclick="toggleServiceForm()" class="px-6 py-3 rounded-xl text-sm font-bold text-stone-400 hover:text-white hover:bg-white/5 transition-colors">CANCELAR</button>
+                                <button type="submit" class="btn-gold px-10 py-3 rounded-xl font-bold text-sm tracking-wide shadow-lg">SALVAR ALTERAÇÕES</button>
                             </div>
                          </form>
                     </div>
 
-                    <!-- LISTA DE ITENS POR CATEGORIA NO ADMIN -->
+                    <!-- LISTA DE ITENS -->
                     ${renderAdminCategorySection('Eventos', services.filter(s => s.category === 'eventos'))}
                     ${renderAdminCategorySection('Casamentos', services.filter(s => s.category === 'casamento'))}
                     ${renderAdminCategorySection('Empresarial', services.filter(s => s.category === 'empresarial'))}
@@ -484,18 +547,18 @@
         function renderAdminCategorySection(title, items) {
             if(items.length === 0) return '';
             return `
-                <div class="mb-8">
-                    <h3 class="text-amber-700 text-xs font-bold uppercase tracking-[0.2em] mb-4 pl-1">${title}</h3>
+                <div class="mb-10">
+                    <h3 class="text-amber-600 text-xs font-bold uppercase tracking-[0.2em] mb-4 pl-1 border-b border-amber-900/30 pb-2 inline-block">${title}</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         ${items.map(p => `
-                            <div class="glass-panel p-5 rounded-xl border border-stone-800 flex items-center justify-between group hover:border-amber-500/30">
+                            <div class="glass-panel p-5 rounded-xl border border-stone-800 flex items-center justify-between group hover:border-amber-500/30 transition-all">
                                 <div>
                                     <p class="text-stone-200 font-bold text-lg">${p.name}</p>
-                                    <p class="text-amber-500 font-bold text-sm tracking-wide">R$ ${p.price}</p>
+                                    <p class="text-amber-500 font-bold text-sm tracking-wide">${p.price}</p>
                                 </div>
                                 <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button onclick='editService(${JSON.stringify(p)})' class="text-stone-500 hover:text-amber-500 p-2"><i class="ph ph-pencil-simple"></i></button>
-                                    <button onclick="deleteService('${p.id}')" class="text-stone-500 hover:text-red-500 p-2"><i class="ph ph-trash"></i></button>
+                                    <button onclick='editService(${JSON.stringify(p)})' class="w-10 h-10 rounded-lg bg-stone-800 hover:bg-amber-600 hover:text-white text-stone-400 transition-colors flex items-center justify-center"><i class="ph ph-pencil-simple text-lg"></i></button>
+                                    <button onclick="deleteService('${p.id}')" class="w-10 h-10 rounded-lg bg-stone-800 hover:bg-red-600 hover:text-white text-stone-400 transition-colors flex items-center justify-center"><i class="ph ph-trash text-lg"></i></button>
                                 </div>
                             </div>
                         `).join('')}
@@ -515,19 +578,32 @@
         }
         async function handleLogout() { await supabase.auth.signOut(); }
 
-        // CRUD SERVIÇOS (Com Categoria)
-        function toggleServiceForm() { document.getElementById('service-form').classList.toggle('hidden'); }
+        // CRUD SERVIÇOS
+        function toggleServiceForm() { 
+            const form = document.getElementById('service-form');
+            form.classList.toggle('hidden');
+            if(form.classList.contains('hidden')) {
+                // Limpa form ao fechar
+                form.querySelector('form').reset();
+                form.querySelector('input[name="id"]').value = "";
+            }
+        }
         async function handleServiceSubmit(e) {
             e.preventDefault();
             const form = e.target;
             const id = form.querySelector('input[name="id"]').value;
             const features = form.features.value.split(',').map(s => s.trim()).filter(s => s);
+            
+            // Pega cor selecionada
+            const colorInput = form.querySelector('input[name="color"]:checked');
+            const color = colorInput ? colorInput.value : 'amber';
+
             const data = {
                 name: form.name.value,
                 price: form.price.value,
                 type: form.type.value,
-                category: form.category.value, // NOVO
-                color: form.color.value,
+                category: form.category.value,
+                color: color,
                 features: features
             };
             if(id) await supabase.from('services').update(data).eq('id', id);
@@ -563,7 +639,7 @@
             }
         }
 
-        // --- FINANCEIRO (RESTAURADO COMPLETO) ---
+        // --- FINANCEIRO ---
         function renderFinance(container, transactions) {
             const totals = transactions.reduce((acc, curr) => {
                 const val = parseFloat(curr.amount);
@@ -583,7 +659,6 @@
                 form.scrollIntoView({ behavior: 'smooth' });
             };
 
-            // Restoring helper function StatCard for Finance specifically
             const StatCardFinance = (label, value, color, icon) => {
                 const colorMap = { emerald: 'text-emerald-400', red: 'text-red-400', amber: 'text-amber-400' };
                 return `
@@ -716,7 +791,7 @@
         }
         function exportCSV() { alert("Gerando relatório CSV..."); }
 
-        // --- AGENDA (ADMIN) ---
+        // --- AGENDA ---
         function renderAgenda(container, events) {
             const today = new Date().toISOString().split('T')[0];
             let filteredEvents = [];
@@ -811,7 +886,7 @@
             }
         }
 
-        // --- CONTROLE (ADMIN) ---
+        // --- CONTROLE ---
         function renderControl(container, jobs) {
              const statusMap = {
                 'scheduled': { label: 'Agendado', color: 'bg-stone-600' },
