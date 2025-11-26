@@ -403,8 +403,8 @@
         async function renderServices(container, services) {
             window.editService = (item) => {
                 const modal = document.getElementById('service-modal');
-                modal.classList.remove('hidden'); // Show Modal
-                modal.classList.add('flex');      // Flex to center
+                modal.classList.remove('hidden'); // Remove hidden
+                modal.classList.add('flex');      // Adiciona flex para centralizar
                 
                 const form = modal.querySelector('form');
                 form.querySelector('input[name="id"]').value = item.id;
@@ -412,10 +412,11 @@
                 form.querySelector('input[name="price"]').value = item.price;
                 form.querySelector('select[name="type"]').value = item.type;
                 
+                // Seleciona a categoria correta se existir o campo
                 const catSelect = form.querySelector('select[name="category"]');
                 if(catSelect) catSelect.value = item.category || 'avulso';
                 
-                // Color visual selector logic
+                // Lógica para marcar o radio button da cor correta
                 const color = item.color || 'amber';
                 const colorInput = form.querySelector(`input[value="${color}"]`);
                 if(colorInput) colorInput.checked = true;
@@ -430,11 +431,8 @@
                         <button onclick="toggleServiceForm()" class="btn-gold px-6 py-3 rounded-xl flex items-center gap-2 text-sm font-bold shadow-lg tracking-wide uppercase"><i class="ph ph-plus-circle text-lg"></i> Novo Item</button>
                     </header>
 
-                    <!-- MODAL DE EDIÇÃO (Alterado de formulário inline para modal) -->
                     <div id="service-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
-                        <!-- Backdrop -->
                         <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="toggleServiceForm()"></div>
-                        <!-- Content -->
                         <div class="relative modal-panel rounded-2xl p-8 w-full max-w-3xl m-4 animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
                              <h3 class="text-white font-heading text-2xl mb-8 border-b border-white/10 pb-4 flex justify-between items-center">
                                 <span>Editor de Serviço</span>
@@ -444,7 +442,6 @@
                              <form onsubmit="handleServiceSubmit(event)" class="space-y-8">
                                 <input type="hidden" name="id" value="">
                                 
-                                <!-- Linha 1 -->
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div class="md:col-span-2">
                                         <label class="text-sm font-medium text-stone-400 mb-2 block">Nome do Serviço</label>
@@ -456,7 +453,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Linha 2 -->
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
                                         <label class="text-sm font-medium text-stone-400 mb-2 block">Categoria</label>
@@ -482,7 +478,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Linha 3 -->
                                 <div>
                                     <label class="text-sm font-medium text-stone-400 mb-3 block">Cor de Destaque</label>
                                     <div class="flex gap-4">
@@ -509,14 +504,12 @@
                                     </div>
                                 </div>
 
-                                <!-- Linha 4 -->
                                 <div>
                                     <label class="text-sm font-medium text-stone-400 mb-2 block">Itens Inclusos (Features)</label>
                                     <textarea name="features" rows="3" placeholder="Ex: 2 Reels, 1 Arte, Cobertura Completa (Separe por vírgulas)" class="input-dark px-4 py-3 rounded-xl w-full resize-none leading-relaxed"></textarea>
                                     <p class="text-xs text-stone-600 mt-1">Separe cada item com uma vírgula.</p>
                                 </div>
 
-                                <!-- Botões -->
                                 <div class="flex justify-end gap-4 pt-6 border-t border-white/5">
                                     <button type="button" onclick="toggleServiceForm()" class="px-6 py-3 rounded-xl text-sm font-bold text-stone-400 hover:text-white hover:bg-white/5 transition-colors">CANCELAR</button>
                                     <button type="submit" class="btn-gold px-10 py-3 rounded-xl font-bold text-sm tracking-wide shadow-lg">SALVAR ALTERAÇÕES</button>
@@ -525,7 +518,6 @@
                         </div>
                     </div>
 
-                    <!-- LISTA DE ITENS -->
                     ${renderAdminCategorySection('Eventos', services.filter(s => s.category === 'eventos'))}
                     ${renderAdminCategorySection('Casamentos', services.filter(s => s.category === 'casamento'))}
                     ${renderAdminCategorySection('Empresarial', services.filter(s => s.category === 'empresarial'))}
@@ -569,13 +561,20 @@
         async function handleLogout() { await supabase.auth.signOut(); }
 
         // CRUD SERVIÇOS
-        function toggleServiceForm() { 
+       function toggleServiceForm() { 
             const modal = document.getElementById('service-modal');
+            
+            // Alterna as classes para mostrar/esconder
             modal.classList.toggle('hidden');
             modal.classList.toggle('flex');
+            
+            // Se estiver escondendo (ou seja, contém 'hidden'), limpa o formulário
             if(modal.classList.contains('hidden')) {
                 modal.querySelector('form').reset();
                 modal.querySelector('input[name="id"]').value = "";
+                // Reseta cor para Amber
+                const defaultColor = modal.querySelector('input[value="amber"]');
+                if(defaultColor) defaultColor.checked = true;
             }
         }
         async function handleServiceSubmit(e) {
@@ -1021,3 +1020,4 @@
     </script>
 </body>
 </html>
+
