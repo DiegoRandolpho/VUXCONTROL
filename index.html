@@ -28,11 +28,10 @@
             background-color: #0a0a0a; 
             background-image: radial-gradient(circle at 50% 0%, #451a03 0%, #0a0a0a 75%); 
             background-attachment: fixed;
-            color: #d6d3d1; /* Stone 300 */
+            color: #d6d3d1; 
         }
         h1, h2, h3, .font-heading { font-family: 'Outfit', sans-serif; }
         
-        /* Efeito de Texto Dourado Metálico */
         .text-gold {
             background: linear-gradient(to bottom right, #fcd34d, #d97706, #b45309);
             -webkit-background-clip: text;
@@ -43,13 +42,26 @@
         .fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Painéis de Vidro "Quente" */
+        /* Animação do Modal */
+        .modal-enter { animation: modalEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes modalEnter { 
+            from { opacity: 0; transform: scale(0.95) translateY(10px); } 
+            to { opacity: 1; transform: scale(1) translateY(0); } 
+        }
+
         .glass-panel {
-            background: rgba(28, 25, 23, 0.75); /* Mais opaco para legibilidade */
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: rgba(28, 25, 23, 0.65); 
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(217, 119, 6, 0.15);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Estilo específico para o Modal (Mais opaco e focado) */
+        .modal-panel {
+            background: #0c0a09; /* Stone 950 sólido para evitar transparência excessiva no modal */
+            border: 1px solid rgba(217, 119, 6, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
         }
         
         .glass-card {
@@ -91,7 +103,6 @@
             box-shadow: 0 0 25px rgba(217, 119, 6, 0.4);
         }
 
-        /* Radio Button Color Selector */
         .color-radio:checked + div {
             transform: scale(1.2);
             border-color: white;
@@ -164,18 +175,15 @@
             }
         }
 
-        // --- VIEWS PÚBLICAS ---
-
+        // --- VIEWS PÚBLICAS --- (Mantido igual, sem alterações necessárias aqui)
         function PublicCatalogView() {
             return `
                 <div class="min-h-screen pb-20 fade-in bg-[#0a0a0a]">
-                    <!-- Hero -->
                     <div class="relative h-[35vh] md:h-[45vh] overflow-hidden border-b border-amber-900/40 flex flex-col items-center justify-center">
                         <div class="absolute inset-0 bg-[#0a0a0a] z-0">
                             <div class="absolute inset-0 bg-gradient-to-b from-[#451a03] via-[#291205] to-[#0a0a0a] opacity-90"></div>
                             <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#d97706 1px, transparent 1px); background-size: 40px 40px;"></div>
                         </div>
-                        
                         <div class="relative z-10 text-center px-6 mt-4">
                             <div class="w-24 h-24 mx-auto rounded-3xl p-1 bg-gradient-to-br from-amber-300 to-amber-900 shadow-2xl shadow-amber-900/50 mb-6 transform hover:scale-105 transition-transform duration-500">
                                 <img src="${LOGO_URL}" class="w-full h-full object-cover rounded-[20px]">
@@ -184,8 +192,6 @@
                             <p class="text-stone-400 tracking-[0.3em] uppercase text-xs md:text-sm font-bold">Visão . União . Experiência</p>
                         </div>
                     </div>
-
-                    <!-- Navigation -->
                     <div class="sticky top-0 z-40 bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-amber-900/20 py-4 overflow-x-auto shadow-2xl">
                         <div class="container mx-auto px-4 flex justify-start md:justify-center gap-3 min-w-max pb-1">
                             ${CatalogFilterBtn('all', 'Todos')}
@@ -195,15 +201,12 @@
                             ${CatalogFilterBtn('avulso', 'Avulsos')}
                         </div>
                     </div>
-
-                    <!-- Content -->
                     <div class="container mx-auto px-4 sm:px-6 py-12 min-h-[50vh]" id="public-catalog-content">
                         <div class="flex flex-col items-center justify-center py-20 gap-6 opacity-70">
                             <div class="w-10 h-10 border-2 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
                             <span class="text-xs text-amber-600 tracking-[0.2em] uppercase font-bold">Carregando portfólio...</span>
                         </div>
                     </div>
-
                     <footer class="text-center text-stone-600 text-sm py-12 border-t border-amber-900/10 mt-10 bg-[#050505]">
                         <p class="opacity-70">&copy; ${new Date().getFullYear()} VUX Control.</p>
                         <a href="https://wa.me/${WHATSAPP_NUMBER}" target="_blank" class="text-amber-700 hover:text-amber-500 text-xs uppercase tracking-widest mt-3 inline-block font-bold border-b border-transparent hover:border-amber-500 transition-all pb-0.5">Fale Conosco</a>
@@ -226,7 +229,6 @@
                 <div class="min-h-screen flex items-center justify-center px-4 fade-in relative overflow-hidden">
                     <div class="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-amber-900/10 rounded-full blur-[150px]"></div>
                     <div class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-orange-900/10 rounded-full blur-[150px]"></div>
-
                     <div class="w-full max-w-md relative z-10">
                         <div class="text-center mb-12">
                             <div class="w-28 h-28 mx-auto rounded-3xl p-1 bg-gradient-to-br from-amber-400 to-amber-900 shadow-2xl shadow-amber-900/40 mb-6">
@@ -234,7 +236,6 @@
                             </div>
                             <h1 class="text-3xl font-bold text-white mb-2 tracking-tight font-heading text-gold">Painel VUX</h1>
                         </div>
-                        
                         <div class="glass-panel rounded-2xl p-8 border-t border-amber-500/20">
                             <form onsubmit="handleLogin(event)" class="space-y-6">
                                 <div>
@@ -246,14 +247,9 @@
                                     <input type="password" id="password" placeholder="••••••" class="input-dark w-full px-4 py-3.5 rounded-xl text-center text-lg tracking-[0.5em]" required>
                                 </div>
                                 <div id="login-error" class="text-red-400 text-sm text-center hidden p-3 bg-red-950/30 rounded-lg"></div>
-                                <button type="submit" class="w-full py-4 btn-gold rounded-xl font-bold tracking-wider shadow-lg flex items-center justify-center gap-3 group">
-                                    <span>ENTRAR</span>
-                                    <i class="ph ph-caret-right text-lg group-hover:translate-x-1 transition-transform"></i>
-                                </button>
+                                <button type="submit" class="w-full py-4 btn-gold rounded-xl font-bold tracking-wider shadow-lg flex items-center justify-center gap-3 group"><span>ENTRAR</span><i class="ph ph-caret-right text-lg group-hover:translate-x-1 transition-transform"></i></button>
                             </form>
-                            <div class="text-center mt-8">
-                                <a href="#catalogo" onclick="window.location.reload()" class="text-[10px] text-stone-600 hover:text-amber-500 uppercase tracking-widest transition-colors border-b border-transparent hover:border-amber-500 pb-1">Ver Catálogo Público</a>
-                            </div>
+                            <div class="text-center mt-8"><a href="#catalogo" onclick="window.location.reload()" class="text-[10px] text-stone-600 hover:text-amber-500 uppercase tracking-widest transition-colors border-b border-transparent hover:border-amber-500 pb-1">Ver Catálogo Público</a></div>
                         </div>
                     </div>
                 </div>
@@ -266,9 +262,7 @@
                     <aside class="fixed left-0 top-0 h-full w-72 bg-[#0c0a09]/95 border-r border-amber-900/20 hidden md:flex flex-col z-30 backdrop-blur-xl">
                         <div class="p-8 pb-4 border-b border-amber-900/10">
                             <div class="flex items-center gap-4">
-                                <div class="w-10 h-10 rounded-lg border border-amber-500/30 p-0.5 shadow-lg shadow-amber-900/20">
-                                    <img src="${LOGO_URL}" class="w-full h-full object-cover rounded-[6px]">
-                                </div>
+                                <div class="w-10 h-10 rounded-lg border border-amber-500/30 p-0.5 shadow-lg shadow-amber-900/20"><img src="${LOGO_URL}" class="w-full h-full object-cover rounded-[6px]"></div>
                                 <div><h1 class="text-xl font-bold text-white font-heading text-gold">VUX</h1></div>
                             </div>
                         </div>
@@ -279,12 +273,9 @@
                             ${NavButton('control', 'kanban', 'Produção')}
                         </nav>
                         <div class="p-4 border-t border-amber-900/10">
-                            <button onclick="handleLogout()" class="flex items-center gap-3 text-stone-500 hover:text-red-400 hover:bg-red-950/10 w-full px-4 py-3.5 rounded-xl transition-all group">
-                                <i class="ph ph-sign-out text-lg"></i><span class="font-medium text-sm">Sair</span>
-                            </button>
+                            <button onclick="handleLogout()" class="flex items-center gap-3 text-stone-500 hover:text-red-400 hover:bg-red-950/10 w-full px-4 py-3.5 rounded-xl transition-all group"><i class="ph ph-sign-out text-lg"></i><span class="font-medium text-sm">Sair</span></button>
                         </div>
                     </aside>
-
                     <div class="md:hidden fixed top-0 w-full glass-panel border-x-0 border-t-0 border-b border-amber-900/20 z-50 px-4 h-16 flex items-center justify-between bg-[#0a0a0a]/90">
                         <div class="flex items-center gap-3">
                             <div class="w-8 h-8 rounded border border-amber-500/30 p-0.5"><img src="${LOGO_URL}" class="w-full h-full object-cover"></div>
@@ -292,11 +283,9 @@
                         </div>
                         <button onclick="toggleMobileMenu()" class="text-amber-500 p-2 bg-amber-900/10 rounded-lg hover:bg-amber-900/20"><i class="ph ph-list text-2xl"></i></button>
                     </div>
-
                     <main class="flex-1 md:pl-72 pt-20 md:pt-0 min-h-screen relative">
                         <div class="max-w-7xl mx-auto p-4 sm:p-10 fade-in" id="main-content"></div>
                     </main>
-
                     <div id="mobile-menu" class="fixed inset-0 bg-[#0c0a09] z-40 pt-24 px-6 hidden fade-in">
                         <nav class="space-y-3">
                             ${NavButton('finance', 'wallet', 'Financeiro', true)}
@@ -304,9 +293,7 @@
                             ${NavButton('agenda', 'calendar-check', 'Agenda', true)}
                             ${NavButton('control', 'kanban', 'Produção', true)}
                             <div class="h-px bg-amber-900/20 my-6"></div>
-                            <button onclick="handleLogout()" class="w-full flex items-center gap-3 px-4 py-4 text-red-400 bg-red-900/10 rounded-xl border border-red-900/20">
-                                <i class="ph ph-sign-out text-xl"></i> Sair
-                            </button>
+                            <button onclick="handleLogout()" class="w-full flex items-center gap-3 px-4 py-4 text-red-400 bg-red-900/10 rounded-xl border border-red-900/20"><i class="ph ph-sign-out text-xl"></i> Sair</button>
                         </nav>
                         <button onclick="toggleMobileMenu()" class="absolute top-4 right-4 text-stone-500 p-2"><i class="ph ph-x text-2xl"></i></button>
                     </div>
@@ -341,13 +328,11 @@
 
             if (error) { container.innerHTML = `<div class="text-center text-red-400 p-8 glass-panel rounded-xl">Erro: ${error.message}</div>`; return; }
 
-            // Filtro
             let filtered = services;
             if(state.catalogFilter !== 'all') {
                 filtered = services.filter(s => s.category === state.catalogFilter);
             }
 
-            // Agrupar para exibição
             const groups = {
                 'eventos': { title: 'Eventos', items: filtered.filter(s => s.category === 'eventos') },
                 'casamento': { title: 'Casamentos', items: filtered.filter(s => s.category === 'casamento') },
@@ -411,21 +396,22 @@
             container.innerHTML = html;
         }
 
-        function filterCatalog(key) {
-            state.catalogFilter = key;
-            render();
-        }
+        function filterCatalog(key) { state.catalogFilter = key; render(); }
 
         // --- ADMIN LOGIC ---
 
         async function renderServices(container, services) {
             window.editService = (item) => {
-                const form = document.getElementById('service-form');
-                form.classList.remove('hidden');
+                const modal = document.getElementById('service-modal');
+                modal.classList.remove('hidden'); // Show Modal
+                modal.classList.add('flex');      // Flex to center
+                
+                const form = modal.querySelector('form');
                 form.querySelector('input[name="id"]').value = item.id;
                 form.querySelector('input[name="name"]').value = item.name;
                 form.querySelector('input[name="price"]').value = item.price;
                 form.querySelector('select[name="type"]').value = item.type;
+                
                 const catSelect = form.querySelector('select[name="category"]');
                 if(catSelect) catSelect.value = item.category || 'avulso';
                 
@@ -435,7 +421,6 @@
                 if(colorInput) colorInput.checked = true;
 
                 form.querySelector('textarea[name="features"]').value = (item.features || []).join(', ');
-                form.scrollIntoView({ behavior: 'smooth' });
             };
 
             container.innerHTML = `
@@ -445,94 +430,99 @@
                         <button onclick="toggleServiceForm()" class="btn-gold px-6 py-3 rounded-xl flex items-center gap-2 text-sm font-bold shadow-lg tracking-wide uppercase"><i class="ph ph-plus-circle text-lg"></i> Novo Item</button>
                     </header>
 
-                    <!-- FORMULÁRIO LIMPO E OTIMIZADO -->
-                    <div id="service-form" class="hidden glass-panel rounded-2xl p-8 border-t border-amber-500/30 mb-12 shadow-2xl">
-                         <h3 class="text-white font-heading text-2xl mb-8 border-b border-white/10 pb-4 flex justify-between items-center">
-                            <span>Editor de Serviço</span>
-                            <button type="button" onclick="toggleServiceForm()" class="text-stone-500 hover:text-white transition-colors"><i class="ph ph-x"></i></button>
-                         </h3>
-                         
-                         <form onsubmit="handleServiceSubmit(event)" class="space-y-8">
-                            <input type="hidden" name="id" value="">
-                            
-                            <!-- Linha 1: Básico -->
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div class="md:col-span-2">
-                                    <label class="text-sm font-medium text-stone-400 mb-2 block">Nome do Serviço</label>
-                                    <input type="text" name="name" placeholder="Ex: Pacote Pocket" class="input-dark px-4 py-3 rounded-xl w-full text-lg text-white placeholder-stone-600" required>
-                                </div>
-                                <div>
-                                    <label class="text-sm font-medium text-stone-400 mb-2 block">Preço (Texto)</label>
-                                    <input type="text" name="price" placeholder="R$ 300,00" class="input-dark px-4 py-3 rounded-xl w-full text-lg text-amber-400 font-bold placeholder-stone-600" required>
-                                </div>
-                            </div>
-
-                            <!-- Linha 2: Categoria e Visual -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label class="text-sm font-medium text-stone-400 mb-2 block">Categoria</label>
-                                    <div class="relative">
-                                        <select name="category" class="input-dark px-4 py-3 rounded-xl w-full appearance-none cursor-pointer">
-                                            <option value="eventos">Eventos</option>
-                                            <option value="casamento">Casamentos</option>
-                                            <option value="empresarial">Empresarial</option>
-                                            <option value="avulso">Avulsos / Adicionais</option>
-                                        </select>
-                                        <i class="ph ph-caret-down absolute right-4 top-1/2 -translate-y-1/2 text-stone-500 pointer-events-none"></i>
+                    <!-- MODAL DE EDIÇÃO (Alterado de formulário inline para modal) -->
+                    <div id="service-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+                        <!-- Backdrop -->
+                        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="toggleServiceForm()"></div>
+                        <!-- Content -->
+                        <div class="relative modal-panel rounded-2xl p-8 w-full max-w-3xl m-4 animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+                             <h3 class="text-white font-heading text-2xl mb-8 border-b border-white/10 pb-4 flex justify-between items-center">
+                                <span>Editor de Serviço</span>
+                                <button type="button" onclick="toggleServiceForm()" class="text-stone-500 hover:text-white transition-colors"><i class="ph ph-x text-2xl"></i></button>
+                             </h3>
+                             
+                             <form onsubmit="handleServiceSubmit(event)" class="space-y-8">
+                                <input type="hidden" name="id" value="">
+                                
+                                <!-- Linha 1 -->
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div class="md:col-span-2">
+                                        <label class="text-sm font-medium text-stone-400 mb-2 block">Nome do Serviço</label>
+                                        <input type="text" name="name" placeholder="Ex: Pacote Pocket" class="input-dark px-4 py-3 rounded-xl w-full text-lg text-white placeholder-stone-600" required>
+                                    </div>
+                                    <div>
+                                        <label class="text-sm font-medium text-stone-400 mb-2 block">Preço (Texto)</label>
+                                        <input type="text" name="price" placeholder="R$ 300,00" class="input-dark px-4 py-3 rounded-xl w-full text-lg text-amber-400 font-bold placeholder-stone-600" required>
                                     </div>
                                 </div>
-                                <div>
-                                    <label class="text-sm font-medium text-stone-400 mb-2 block">Estilo do Card</label>
-                                    <div class="relative">
-                                        <select name="type" class="input-dark px-4 py-3 rounded-xl w-full appearance-none cursor-pointer">
-                                            <option value="plan">Pacote (Card Grande)</option>
-                                            <option value="single">Simples (Lista)</option>
-                                        </select>
-                                        <i class="ph ph-caret-down absolute right-4 top-1/2 -translate-y-1/2 text-stone-500 pointer-events-none"></i>
+
+                                <!-- Linha 2 -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="text-sm font-medium text-stone-400 mb-2 block">Categoria</label>
+                                        <div class="relative">
+                                            <select name="category" class="input-dark px-4 py-3 rounded-xl w-full appearance-none cursor-pointer">
+                                                <option value="eventos">Eventos</option>
+                                                <option value="casamento">Casamentos</option>
+                                                <option value="empresarial">Empresarial</option>
+                                                <option value="avulso">Avulsos / Adicionais</option>
+                                            </select>
+                                            <i class="ph ph-caret-down absolute right-4 top-1/2 -translate-y-1/2 text-stone-500 pointer-events-none"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="text-sm font-medium text-stone-400 mb-2 block">Estilo do Card</label>
+                                        <div class="relative">
+                                            <select name="type" class="input-dark px-4 py-3 rounded-xl w-full appearance-none cursor-pointer">
+                                                <option value="plan">Pacote (Card Grande)</option>
+                                                <option value="single">Simples (Lista)</option>
+                                            </select>
+                                            <i class="ph ph-caret-down absolute right-4 top-1/2 -translate-y-1/2 text-stone-500 pointer-events-none"></i>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <!-- Linha 3: Cor Destaque (Visual) -->
-                            <div>
-                                <label class="text-sm font-medium text-stone-400 mb-3 block">Cor de Destaque</label>
-                                <div class="flex gap-4">
-                                    <label class="cursor-pointer group">
-                                        <input type="radio" name="color" value="amber" class="hidden color-radio" checked>
-                                        <div class="w-10 h-10 rounded-full bg-amber-500 border-2 border-transparent group-hover:scale-110 transition-all"></div>
-                                        <span class="text-xs text-center block mt-1 text-stone-500">Ouro</span>
-                                    </label>
-                                    <label class="cursor-pointer group">
-                                        <input type="radio" name="color" value="emerald" class="hidden color-radio">
-                                        <div class="w-10 h-10 rounded-full bg-emerald-500 border-2 border-transparent group-hover:scale-110 transition-all"></div>
-                                        <span class="text-xs text-center block mt-1 text-stone-500">Verde</span>
-                                    </label>
-                                    <label class="cursor-pointer group">
-                                        <input type="radio" name="color" value="rose" class="hidden color-radio">
-                                        <div class="w-10 h-10 rounded-full bg-rose-500 border-2 border-transparent group-hover:scale-110 transition-all"></div>
-                                        <span class="text-xs text-center block mt-1 text-stone-500">Vermelho</span>
-                                    </label>
-                                    <label class="cursor-pointer group">
-                                        <input type="radio" name="color" value="stone" class="hidden color-radio">
-                                        <div class="w-10 h-10 rounded-full bg-stone-500 border-2 border-transparent group-hover:scale-110 transition-all"></div>
-                                        <span class="text-xs text-center block mt-1 text-stone-500">Cinza</span>
-                                    </label>
+                                <!-- Linha 3 -->
+                                <div>
+                                    <label class="text-sm font-medium text-stone-400 mb-3 block">Cor de Destaque</label>
+                                    <div class="flex gap-4">
+                                        <label class="cursor-pointer group">
+                                            <input type="radio" name="color" value="amber" class="hidden color-radio" checked>
+                                            <div class="w-10 h-10 rounded-full bg-amber-500 border-2 border-transparent group-hover:scale-110 transition-all"></div>
+                                            <span class="text-xs text-center block mt-1 text-stone-500">Ouro</span>
+                                        </label>
+                                        <label class="cursor-pointer group">
+                                            <input type="radio" name="color" value="emerald" class="hidden color-radio">
+                                            <div class="w-10 h-10 rounded-full bg-emerald-500 border-2 border-transparent group-hover:scale-110 transition-all"></div>
+                                            <span class="text-xs text-center block mt-1 text-stone-500">Verde</span>
+                                        </label>
+                                        <label class="cursor-pointer group">
+                                            <input type="radio" name="color" value="rose" class="hidden color-radio">
+                                            <div class="w-10 h-10 rounded-full bg-rose-500 border-2 border-transparent group-hover:scale-110 transition-all"></div>
+                                            <span class="text-xs text-center block mt-1 text-stone-500">Vermelho</span>
+                                        </label>
+                                        <label class="cursor-pointer group">
+                                            <input type="radio" name="color" value="stone" class="hidden color-radio">
+                                            <div class="w-10 h-10 rounded-full bg-stone-500 border-2 border-transparent group-hover:scale-110 transition-all"></div>
+                                            <span class="text-xs text-center block mt-1 text-stone-500">Cinza</span>
+                                        </label>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <!-- Linha 4: Itens -->
-                            <div>
-                                <label class="text-sm font-medium text-stone-400 mb-2 block">Itens Inclusos (Features)</label>
-                                <textarea name="features" rows="3" placeholder="Ex: 2 Reels, 1 Arte, Cobertura Completa (Separe por vírgulas)" class="input-dark px-4 py-3 rounded-xl w-full resize-none leading-relaxed"></textarea>
-                                <p class="text-xs text-stone-600 mt-1">Separe cada item com uma vírgula.</p>
-                            </div>
+                                <!-- Linha 4 -->
+                                <div>
+                                    <label class="text-sm font-medium text-stone-400 mb-2 block">Itens Inclusos (Features)</label>
+                                    <textarea name="features" rows="3" placeholder="Ex: 2 Reels, 1 Arte, Cobertura Completa (Separe por vírgulas)" class="input-dark px-4 py-3 rounded-xl w-full resize-none leading-relaxed"></textarea>
+                                    <p class="text-xs text-stone-600 mt-1">Separe cada item com uma vírgula.</p>
+                                </div>
 
-                            <!-- Botões -->
-                            <div class="flex justify-end gap-4 pt-6 border-t border-white/5">
-                                <button type="button" onclick="toggleServiceForm()" class="px-6 py-3 rounded-xl text-sm font-bold text-stone-400 hover:text-white hover:bg-white/5 transition-colors">CANCELAR</button>
-                                <button type="submit" class="btn-gold px-10 py-3 rounded-xl font-bold text-sm tracking-wide shadow-lg">SALVAR ALTERAÇÕES</button>
-                            </div>
-                         </form>
+                                <!-- Botões -->
+                                <div class="flex justify-end gap-4 pt-6 border-t border-white/5">
+                                    <button type="button" onclick="toggleServiceForm()" class="px-6 py-3 rounded-xl text-sm font-bold text-stone-400 hover:text-white hover:bg-white/5 transition-colors">CANCELAR</button>
+                                    <button type="submit" class="btn-gold px-10 py-3 rounded-xl font-bold text-sm tracking-wide shadow-lg">SALVAR ALTERAÇÕES</button>
+                                </div>
+                             </form>
+                        </div>
                     </div>
 
                     <!-- LISTA DE ITENS -->
@@ -580,12 +570,12 @@
 
         // CRUD SERVIÇOS
         function toggleServiceForm() { 
-            const form = document.getElementById('service-form');
-            form.classList.toggle('hidden');
-            if(form.classList.contains('hidden')) {
-                // Limpa form ao fechar
-                form.querySelector('form').reset();
-                form.querySelector('input[name="id"]').value = "";
+            const modal = document.getElementById('service-modal');
+            modal.classList.toggle('hidden');
+            modal.classList.toggle('flex');
+            if(modal.classList.contains('hidden')) {
+                modal.querySelector('form').reset();
+                modal.querySelector('input[name="id"]').value = "";
             }
         }
         async function handleServiceSubmit(e) {
@@ -593,8 +583,6 @@
             const form = e.target;
             const id = form.querySelector('input[name="id"]').value;
             const features = form.features.value.split(',').map(s => s.trim()).filter(s => s);
-            
-            // Pega cor selecionada
             const colorInput = form.querySelector('input[name="color"]:checked');
             const color = colorInput ? colorInput.value : 'amber';
 
@@ -608,6 +596,9 @@
             };
             if(id) await supabase.from('services').update(data).eq('id', id);
             else await supabase.from('services').insert([data]);
+            
+            // Close modal after submit
+            toggleServiceForm();
             renderTabContent();
         }
         async function deleteService(id) {
@@ -648,15 +639,16 @@
             }, { income: 0, expense: 0 });
 
             window.editFinance = (item) => {
-                const form = document.getElementById('finance-form');
-                form.classList.remove('hidden');
+                const modal = document.getElementById('finance-modal');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                const form = modal.querySelector('form');
                 form.querySelector('input[name="id"]').value = item.id;
                 form.querySelector('input[name="description"]').value = item.description;
                 form.querySelector('input[name="amount"]').value = item.amount;
                 form.querySelector('input[name="date"]').value = item.date;
                 const radios = form.querySelectorAll('input[name="type"]');
                 radios.forEach(r => r.checked = r.value === item.type);
-                form.scrollIntoView({ behavior: 'smooth' });
             };
 
             const StatCardFinance = (label, value, color, icon) => {
@@ -697,40 +689,48 @@
                         </button>
                     </div>
 
-                    <div id="finance-form" class="hidden glass-panel rounded-2xl p-8 border-t border-amber-500/30">
-                        <form onsubmit="handleFinanceSubmit(event)" class="space-y-6">
-                            <input type="hidden" name="id" value="">
-                            <div class="flex gap-4 mb-2">
-                                <label class="flex items-center justify-center gap-3 cursor-pointer text-stone-300 p-4 rounded-xl bg-black/40 border border-stone-800 flex-1 hover:border-emerald-500/50 hover:text-emerald-400 transition-all">
-                                    <input type="radio" name="type" value="income" checked class="accent-emerald-500 w-4 h-4"> 
-                                    <span class="font-bold uppercase text-sm tracking-wider">Entrada</span>
-                                </label>
-                                <label class="flex items-center justify-center gap-3 cursor-pointer text-stone-300 p-4 rounded-xl bg-black/40 border border-stone-800 flex-1 hover:border-red-500/50 hover:text-red-400 transition-all">
-                                    <input type="radio" name="type" value="expense" class="accent-red-500 w-4 h-4"> 
-                                    <span class="font-bold uppercase text-sm tracking-wider">Saída</span>
-                                </label>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                <div>
-                                    <label class="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-2 block">Descrição</label>
-                                    <input type="text" name="description" placeholder="Ex: Pagamento Cliente X" class="input-dark px-4 py-3 rounded-xl w-full" required>
+                    <!-- MODAL FINANCEIRO -->
+                    <div id="finance-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+                        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="toggleFinanceForm()"></div>
+                        <div class="relative modal-panel rounded-2xl p-8 w-full max-w-2xl m-4 animate-in zoom-in-95 duration-200">
+                            <h3 class="text-white font-heading text-2xl mb-8 border-b border-white/10 pb-4 flex justify-between items-center">
+                                <span>Transação</span>
+                                <button type="button" onclick="toggleFinanceForm()" class="text-stone-500 hover:text-white transition-colors"><i class="ph ph-x text-2xl"></i></button>
+                            </h3>
+                            <form onsubmit="handleFinanceSubmit(event)" class="space-y-6">
+                                <input type="hidden" name="id" value="">
+                                <div class="flex gap-4 mb-2">
+                                    <label class="flex items-center justify-center gap-3 cursor-pointer text-stone-300 p-4 rounded-xl bg-black/40 border border-stone-800 flex-1 hover:border-emerald-500/50 hover:text-emerald-400 transition-all">
+                                        <input type="radio" name="type" value="income" checked class="accent-emerald-500 w-4 h-4"> 
+                                        <span class="font-bold uppercase text-sm tracking-wider">Entrada</span>
+                                    </label>
+                                    <label class="flex items-center justify-center gap-3 cursor-pointer text-stone-300 p-4 rounded-xl bg-black/40 border border-stone-800 flex-1 hover:border-red-500/50 hover:text-red-400 transition-all">
+                                        <input type="radio" name="type" value="expense" class="accent-red-500 w-4 h-4"> 
+                                        <span class="font-bold uppercase text-sm tracking-wider">Saída</span>
+                                    </label>
                                 </div>
-                                <div class="grid grid-cols-2 gap-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                     <div>
-                                        <label class="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-2 block">Valor (R$)</label>
-                                        <input type="number" name="amount" step="0.01" placeholder="0.00" class="input-dark px-4 py-3 rounded-xl w-full font-mono text-amber-400" required>
+                                        <label class="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-2 block">Descrição</label>
+                                        <input type="text" name="description" placeholder="Ex: Pagamento Cliente X" class="input-dark px-4 py-3 rounded-xl w-full" required>
                                     </div>
-                                    <div>
-                                        <label class="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-2 block">Data</label>
-                                        <input type="date" name="date" class="input-dark px-4 py-3 rounded-xl w-full text-stone-400" required value="${new Date().toISOString().split('T')[0]}">
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-2 block">Valor (R$)</label>
+                                            <input type="number" name="amount" step="0.01" placeholder="0.00" class="input-dark px-4 py-3 rounded-xl w-full font-mono text-amber-400" required>
+                                        </div>
+                                        <div>
+                                            <label class="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-2 block">Data</label>
+                                            <input type="date" name="date" class="input-dark px-4 py-3 rounded-xl w-full text-stone-400" required value="${new Date().toISOString().split('T')[0]}">
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="flex justify-end gap-3 pt-4 border-t border-white/5">
-                                <button type="button" onclick="toggleFinanceForm()" class="text-stone-500 hover:text-stone-300 px-6 py-2 text-xs font-bold uppercase tracking-wider">Cancelar</button>
-                                <button type="submit" class="btn-gold px-8 py-3 rounded-xl font-bold text-sm shadow-lg tracking-wide">SALVAR REGISTRO</button>
-                            </div>
-                        </form>
+                                <div class="flex justify-end gap-3 pt-4 border-t border-white/5">
+                                    <button type="button" onclick="toggleFinanceForm()" class="text-stone-500 hover:text-stone-300 px-6 py-2 text-xs font-bold uppercase tracking-wider">Cancelar</button>
+                                    <button type="submit" class="btn-gold px-8 py-3 rounded-xl font-bold text-sm shadow-lg tracking-wide">SALVAR REGISTRO</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
 
                     <div class="glass-panel rounded-2xl overflow-hidden border border-amber-900/20">
@@ -768,11 +768,12 @@
         }
 
         function toggleFinanceForm() {
-            const form = document.getElementById('finance-form');
-            form.classList.toggle('hidden');
-            if(form.classList.contains('hidden')) {
-                form.reset();
-                form.querySelector('input[name="id"]').value = "";
+            const modal = document.getElementById('finance-modal');
+            modal.classList.toggle('hidden');
+            modal.classList.toggle('flex');
+            if(modal.classList.contains('hidden')) {
+                modal.querySelector('form').reset();
+                modal.querySelector('input[name="id"]').value = "";
             }
         }
         async function handleFinanceSubmit(e) {
@@ -781,6 +782,7 @@
             const id = form.querySelector('input[name="id"]').value;
             const data = { type: form.type.value, description: form.description.value, amount: parseFloat(form.amount.value), date: form.date.value };
             if (id) { await supabase.from('finance').update(data).eq('id', id); } else { await supabase.from('finance').insert([data]); }
+            toggleFinanceForm();
             renderTabContent();
         }
         async function deleteFinance(id) {
@@ -817,14 +819,16 @@
             });
 
             window.editAgenda = (item) => {
-                const form = document.getElementById('agenda-form');
+                const modal = document.getElementById('agenda-modal');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                const form = modal.querySelector('form');
                 form.querySelector('input[name="id"]').value = item.id;
                 form.querySelector('input[name="date"]').value = item.date;
                 form.querySelector('input[name="time"]').value = item.time;
                 form.querySelector('select[name="type"]').value = item.type;
                 form.querySelector('input[name="title"]').value = item.title;
                 form.querySelector('button[type="submit"]').textContent = 'ATUALIZAR';
-                form.scrollIntoView({ behavior: 'smooth' });
             };
 
             container.innerHTML = `
@@ -838,8 +842,12 @@
                         </div>
                     </header>
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div class="lg:col-span-2 space-y-4">
-                            ${state.agendaFilter === 'day' ? `<div class="flex items-center gap-4 mb-4"><input type="date" value="${state.selectedDate || today}" onchange="changeAgendaDate(this.value)" class="input-dark px-4 py-3 rounded-xl border-amber-500/30 text-amber-500 font-bold"></div>` : ''}
+                        <div class="lg:col-span-3 space-y-4">
+                            <div class="flex justify-between items-center">
+                                ${state.agendaFilter === 'day' ? `<div class="flex items-center gap-4 mb-4"><input type="date" value="${state.selectedDate || today}" onchange="changeAgendaDate(this.value)" class="input-dark px-4 py-3 rounded-xl border-amber-500/30 text-amber-500 font-bold"></div>` : '<div></div>'}
+                                <button onclick="toggleAgendaForm()" class="btn-gold px-6 py-3 rounded-xl text-sm font-bold shadow-lg">NOVO EVENTO</button>
+                            </div>
+
                             ${filteredEvents.length === 0 ? `<div class="glass-panel p-12 rounded-2xl text-center border-dashed border border-stone-800"><i class="ph ph-coffee text-4xl text-stone-700 mb-3"></i><p class="text-stone-600 italic">Agenda livre.</p></div>` : ''}
                             ${filteredEvents.map(ev => {
                                 const isToday = ev.date === today;
@@ -851,22 +859,41 @@
                                 </div>
                             `}).join('')}
                         </div>
-                        <div id="agenda-form" class="glass-panel p-6 rounded-2xl h-fit sticky top-6 border-t border-amber-500/30">
-                            <h3 class="text-sm font-bold text-amber-500 mb-6 flex items-center gap-2 uppercase tracking-widest"><i class="ph ph-calendar-plus text-lg"></i> Agendar</h3>
-                            <form onsubmit="handleAgendaSubmit(event)" class="space-y-5">
-                                <input type="hidden" name="id" value="">
-                                <div><label class="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-2 block">Data</label><input type="date" name="date" class="input-dark w-full px-4 py-3 rounded-xl text-stone-300" required value="${state.selectedDate || today}"></div>
-                                <div class="flex gap-4">
-                                    <div class="flex-1"><label class="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-2 block">Hora</label><input type="time" name="time" class="input-dark w-full px-4 py-3 rounded-xl text-stone-300" required></div>
-                                    <div class="flex-1"><label class="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-2 block">Tipo</label><select name="type" class="input-dark w-full px-4 py-3 rounded-xl cursor-pointer text-stone-300"><option>Reunião</option><option>Gravação</option><option>Edição</option><option>Entrega</option></select></div>
-                                </div>
-                                <div><label class="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-2 block">Título</label><input type="text" name="title" placeholder="Cliente ou Evento" class="input-dark w-full px-4 py-3 rounded-xl" required></div>
-                                <button type="submit" class="w-full btn-gold py-4 rounded-xl font-bold shadow-lg tracking-wide uppercase mt-2">CONFIRMAR</button>
-                            </form>
+                        
+                        <!-- MODAL AGENDA -->
+                        <div id="agenda-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+                            <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="toggleAgendaForm()"></div>
+                            <div class="relative modal-panel rounded-2xl p-8 w-full max-w-lg m-4 animate-in zoom-in-95 duration-200">
+                                <h3 class="text-sm font-bold text-amber-500 mb-6 flex items-center gap-2 uppercase tracking-widest border-b border-white/10 pb-4 justify-between">
+                                    <span><i class="ph ph-calendar-plus text-lg"></i> Agendar</span>
+                                    <button onclick="toggleAgendaForm()" class="text-stone-500 hover:text-white"><i class="ph ph-x text-xl"></i></button>
+                                </h3>
+                                <form onsubmit="handleAgendaSubmit(event)" class="space-y-5">
+                                    <input type="hidden" name="id" value="">
+                                    <div><label class="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-2 block">Data</label><input type="date" name="date" class="input-dark w-full px-4 py-3 rounded-xl text-stone-300" required value="${state.selectedDate || today}"></div>
+                                    <div class="flex gap-4">
+                                        <div class="flex-1"><label class="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-2 block">Hora</label><input type="time" name="time" class="input-dark w-full px-4 py-3 rounded-xl text-stone-300" required></div>
+                                        <div class="flex-1"><label class="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-2 block">Tipo</label><select name="type" class="input-dark w-full px-4 py-3 rounded-xl cursor-pointer text-stone-300"><option>Reunião</option><option>Gravação</option><option>Edição</option><option>Entrega</option></select></div>
+                                    </div>
+                                    <div><label class="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-2 block">Título</label><input type="text" name="title" placeholder="Cliente ou Evento" class="input-dark w-full px-4 py-3 rounded-xl" required></div>
+                                    <button type="submit" class="w-full btn-gold py-4 rounded-xl font-bold shadow-lg tracking-wide uppercase mt-2">CONFIRMAR</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
             `;
+        }
+
+        function toggleAgendaForm() {
+            const modal = document.getElementById('agenda-modal');
+            modal.classList.toggle('hidden');
+            modal.classList.toggle('flex');
+            if(modal.classList.contains('hidden')) {
+                modal.querySelector('form').reset();
+                modal.querySelector('input[name="id"]').value = "";
+                modal.querySelector('button[type="submit"]').textContent = 'CONFIRMAR';
+            }
         }
 
         function setAgendaFilter(filter) { state.agendaFilter = filter; renderTabContent(); }
@@ -877,6 +904,7 @@
             const id = form.querySelector('input[name="id"]').value;
             const data = { date: form.date.value, time: form.time.value, title: form.title.value, type: form.type.value };
             if(id) { await supabase.from('agenda').update(data).eq('id', id); } else { await supabase.from('agenda').insert([data]); }
+            toggleAgendaForm();
             renderTabContent();
         }
         async function deleteEvent(id) {
@@ -897,24 +925,40 @@
             };
 
             window.editJob = (item) => {
-                const form = document.querySelector('form#job-form');
+                const modal = document.getElementById('control-modal');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                const form = modal.querySelector('form');
                 form.querySelector('input[name="id"]').value = item.id;
                 form.querySelector('input[name="title"]').value = item.title;
-                const btn = form.querySelector('button');
-                btn.classList.add('bg-emerald-600'); 
-                form.querySelector('input[name="title"]').focus();
+                form.querySelector('button[type="submit"]').innerHTML = '<i class="ph ph-check text-2xl align-middle"></i>';
             };
 
             container.innerHTML = `
                 <div class="space-y-8 animate-in fade-in">
                     <header class="flex justify-between items-end border-b border-amber-900/20 pb-6">
                          <div><h2 class="text-4xl font-bold text-white mb-1 font-heading text-gold">Produção</h2><p class="text-stone-500 text-sm tracking-wide">Controle de Jobs</p></div>
+                         <button onclick="toggleControlForm()" class="btn-gold px-6 py-3 rounded-xl text-sm font-bold shadow-lg">NOVO JOB</button>
                     </header>
-                    <form id="job-form" onsubmit="handleJobSubmit(event)" class="relative group z-10">
-                        <input type="hidden" name="id" value="">
-                        <input type="text" name="title" placeholder="Novo Job..." class="w-full bg-[#0c0a09] border border-amber-900/30 text-white px-8 py-6 rounded-2xl text-xl focus:border-amber-500 focus:shadow-[0_0_30px_rgba(245,158,11,0.1)] outline-none transition-all placeholder-stone-700" required>
-                        <button type="submit" class="absolute right-4 top-4 bottom-4 bg-amber-600 hover:bg-amber-500 text-white px-6 rounded-xl font-bold transition-colors shadow-lg"><i class="ph ph-plus text-2xl align-middle"></i></button>
-                    </form>
+                    
+                    <!-- MODAL CONTROLE -->
+                    <div id="control-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+                        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="toggleControlForm()"></div>
+                        <div class="relative modal-panel rounded-2xl p-8 w-full max-w-md m-4 animate-in zoom-in-95 duration-200">
+                            <h3 class="text-white font-heading text-xl mb-6 flex justify-between items-center">
+                                <span>Job</span>
+                                <button onclick="toggleControlForm()" class="text-stone-500 hover:text-white"><i class="ph ph-x text-xl"></i></button>
+                            </h3>
+                            <form onsubmit="handleJobSubmit(event)">
+                                <input type="hidden" name="id" value="">
+                                <input type="text" name="title" placeholder="Título do Job..." class="w-full bg-[#0c0a09] border border-amber-900/30 text-white px-6 py-4 rounded-xl text-lg focus:border-amber-500 outline-none mb-4" required>
+                                <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-white py-3 rounded-xl font-bold transition-colors shadow-lg">
+                                    <i class="ph ph-plus text-2xl align-middle"></i> SALVAR
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
                     <div class="space-y-4">
                         ${jobs.length === 0 ? '<div class="p-16 text-center text-stone-600 glass-panel rounded-2xl border-dashed border border-stone-800 italic">Lista de produção vazia.</div>' : ''}
                         ${jobs.map(job => {
@@ -942,16 +986,24 @@
             `;
         }
 
+        function toggleControlForm() {
+            const modal = document.getElementById('control-modal');
+            modal.classList.toggle('hidden');
+            modal.classList.toggle('flex');
+            if(modal.classList.contains('hidden')) {
+                modal.querySelector('form').reset();
+                modal.querySelector('input[name="id"]').value = "";
+                modal.querySelector('button[type="submit"]').innerHTML = '<i class="ph ph-plus text-2xl align-middle"></i> SALVAR';
+            }
+        }
+
         async function handleJobSubmit(e) {
             e.preventDefault();
             const form = e.target;
             const id = form.querySelector('input[name="id"]').value;
             const title = form.title.value;
             if(id) { await supabase.from('control').update({ title }).eq('id', id); } else { await supabase.from('control').insert([{ title: title, status: 'scheduled' }]); }
-            form.reset();
-            form.querySelector('input[name="id"]').value = "";
-            const btn = form.querySelector('button');
-            btn.classList.remove('bg-emerald-600'); 
+            toggleControlForm();
             renderTabContent();
         }
         async function updateJobStatus(id, status) {
