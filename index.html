@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VUX Control | Gold Edition</title>
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    
     <!-- Favicon -->
     <link rel="icon" href="https://ibcwymyyyzysmfxadagq.supabase.co/storage/v1/object/public/LOGO/38baf5b4-cf85-4104-9fd3-b4b6ef578aad.jpg" type="image/jpeg">
     <link rel="apple-touch-icon" href="https://ibcwymyyyzysmfxadagq.supabase.co/storage/v1/object/public/LOGO/38baf5b4-cf85-4104-9fd3-b4b6ef578aad.jpg">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+    <!-- APEXCHARTS -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
@@ -270,7 +271,7 @@
                             </div>
                         </div>
                         <nav class="flex-1 px-4 py-8 space-y-2">
-                            ${NavButton('dashboard', 'chart-pie-slice', 'Dashboard')} ${NavButton('finance', 'wallet', 'Financeiro')}
+                            ${NavButton('dashboard', 'chart-pie-slice', 'Dashboard')}
                             ${NavButton('finance', 'wallet', 'Financeiro')}
                             ${NavButton('services', 'briefcase', 'Catálogo')}
                             ${NavButton('agenda', 'calendar-check', 'Agenda')}
@@ -292,7 +293,7 @@
                     </main>
                     <div id="mobile-menu" class="fixed inset-0 bg-[#0c0a09] z-40 pt-24 px-6 hidden fade-in">
                         <nav class="space-y-3">
-                            ${NavButton('dashboard', 'chart-pie-slice', 'Dashboard', true)} ${NavButton('finance', 'wallet', 'Financeiro', true)}
+                            ${NavButton('dashboard', 'chart-pie-slice', 'Dashboard', true)}
                             ${NavButton('finance', 'wallet', 'Financeiro', true)}
                             ${NavButton('services', 'briefcase', 'Catálogo', true)}
                             ${NavButton('agenda', 'calendar-check', 'Agenda', true)}
@@ -613,10 +614,20 @@
             const container = document.getElementById('main-content');
             if(!container) return;
             
+            // Estado de Loading Inicial
             container.innerHTML = `<div class="flex flex-col items-center justify-center py-20 gap-4 opacity-70"><div class="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin"></div><span class="text-xs text-amber-700 tracking-[0.2em] uppercase font-bold">Carregando dados...</span></div>`;
 
             try {
-                if(state.currentTab === 'services') {
+                // VERIFICAÇÃO DO DASHBOARD (AQUI ESTAVA FALTANDO)
+                if(state.currentTab === 'dashboard') {
+                    // Certifique-se que a função renderDashboard foi colada no seu código!
+                    if (typeof renderDashboard === "function") {
+                        await renderDashboard(container);
+                    } else {
+                        container.innerHTML = "Erro: Função renderDashboard não encontrada.";
+                    }
+                } 
+                else if(state.currentTab === 'services') {
                     const { data } = await supabase.from('services').select('*').order('created_at', { ascending: true });
                     renderServices(container, data || []);
                 } else if(state.currentTab === 'finance') {
@@ -630,7 +641,8 @@
                     renderControl(container, data || []);
                 }
             } catch (err) {
-                container.innerHTML = `<div class="text-red-400 p-6 border border-red-900/30 bg-red-950/10 rounded-xl text-center">Erro ao carregar dados.</div>`;
+                console.error(err);
+                container.innerHTML = `<div class="text-red-400 p-6 border border-red-900/30 bg-red-950/10 rounded-xl text-center">Erro ao carregar dados: ${err.message}</div>`;
             }
         }
         async function renderDashboard(container) {
@@ -1213,5 +1225,6 @@ window.applyDashFilters = () => {
     </script>
 </body>
 </html>
+
 
 
