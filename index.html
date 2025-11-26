@@ -719,8 +719,8 @@
             e.preventDefault();
 
             // 1. Pegar os elementos
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            const email = document.getElementById('email').value.trim().toLowerCase(); // Remove espaços e força minúsculo
+            const password = document.getElementById('password').value; // Senha NUNCA usamos toLowerCase, pois diferencia
             const btn = e.target.querySelector('button');
             const errorDiv = document.getElementById('login-error');
 
@@ -1504,6 +1504,7 @@ window.applyDashFilters = () => {
     </script>
 </body>
 </html>
+
 
 
 
