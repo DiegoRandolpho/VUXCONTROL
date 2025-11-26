@@ -248,11 +248,11 @@
                             <form onsubmit="handleLogin(event)" class="space-y-6">
                                 <div>
                                     <label class="text-[10px] font-bold text-amber-600 uppercase tracking-[0.2em] mb-2 block">Email</label>
-                                    <input type="email" id="email" value="admin@vux.com" class="input-dark w-full px-4 py-3.5 rounded-xl" required>
+                                    <input type="email" id="email" placeholder="Digite seu e-mail" class="input-dark w-full px-4 py-3.5 rounded-xl text-stone-300" required>
                                 </div>
                                 <div>
-                                    <label class="text-[10px] font-bold text-amber-600 uppercase tracking-[0.2em] mb-2 block">PIN</label>
-                                    <input type="password" id="password" placeholder="••••••" class="input-dark w-full px-4 py-3.5 rounded-xl text-center text-lg tracking-[0.5em]" required>
+                                    <label class="text-[10px] font-bold text-amber-600 uppercase tracking-[0.2em] mb-2 block">Senha / PIN</label>
+                                    <input type="password" id="password" placeholder="••••••" class="input-dark w-full px-4 py-3.5 rounded-xl text-center text-lg tracking-[0.5em] text-stone-300" required>
                                 </div>
                                 <div id="login-error" class="text-red-400 text-sm text-center hidden p-3 bg-red-950/30 rounded-lg"></div>
                                 <button type="submit" class="w-full py-4 btn-gold rounded-xl font-bold tracking-wider shadow-lg flex items-center justify-center gap-3 group"><span>ENTRAR</span><i class="ph ph-caret-right text-lg group-hover:translate-x-1 transition-transform"></i></button>
@@ -1410,6 +1410,7 @@ window.applyDashFilters = () => {
     </script>
 </body>
 </html>
+
 
 
 
