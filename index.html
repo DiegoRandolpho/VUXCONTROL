@@ -654,13 +654,17 @@
 
         // --- HANDLERS ---
 
-        function switchTab(tab) { state.currentTab = tab; state.mobileMenuOpen = false; render(); }
-        function toggleMobileMenu() { state.mobileMenuOpen = !state.mobileMenuOpen; render(); }
-        async function handleLogin(e) {
-            e.preventDefault();
-            const { error } = await supabase.auth.signInWithPassword({ email: e.target.email.value, password: e.target.password.value });
-            if(error) alert("Erro login: " + error.message);
-        }
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            // Apenas liga/desliga a classe 'hidden'
+            menu.classList.toggle('hidden');
+            }
+            function switchTab(tab) { 
+            state.currentTab = tab; 
+            // Rola para o topo ao trocar de aba (bom para mobile)
+            window.scrollTo(0, 0);
+            render(); 
+            }
         async function handleLogout() { await supabase.auth.signOut(); }
 
         // CRUD SERVIÇOS
@@ -1326,6 +1330,7 @@ window.applyDashFilters = () => {
     </script>
 </body>
 </html>
+
 
 
 
