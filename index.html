@@ -352,7 +352,6 @@
         }
 
         async function loadPublicCatalogData() {
-            // Busca dados ordenados
             const { data: services, error } = await supabase.from('services').select('*').order('created_at', { ascending: true });
             const container = document.getElementById('public-catalog-content');
             
@@ -363,13 +362,11 @@
                 return; 
             }
 
-            // Filtragem
             let filtered = services;
             if(state.catalogFilter !== 'all') {
                 filtered = services.filter(s => s.category === state.catalogFilter);
             }
 
-            // Agrupamento
             const groups = {
                 'eventos': { title: 'Eventos', items: filtered.filter(s => s.category === 'eventos') },
                 'casamento': { title: 'Casamentos', items: filtered.filter(s => s.category === 'casamento') },
@@ -398,8 +395,6 @@
                                 const isPlan = item.type === 'plan';
                                 const color = item.color || 'amber';
                                 
-                                // LÓGICA DA MENSAGEM DO WHATSAPP (ATUALIZADO)
-                                // Se tiver mensagem no banco, usa ela. Se não, usa a padrão.
                                 const defaultMsg = `Olá! Tenho interesse no ${item.name} (${group.title})`;
                                 const finalMsg = item.message && item.message.trim() !== '' ? item.message : defaultMsg;
                                 const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(finalMsg)}`;
@@ -412,7 +407,7 @@
                                         <h3 class="text-2xl font-bold text-white font-heading mb-3 leading-tight">${item.name}</h3>
                                         <div class="flex items-baseline gap-1 mb-6">
                                             <span class="text-xs text-stone-500 font-bold uppercase tracking-wider">A partir de</span>
-                                            <span class="text-3xl font-bold text-white font-heading tracking-tighter text-gold ml-2">${item.price}</span>
+                                            <span class="text-3xl font-bold text-white font-heading tracking-tighter text-gold ml-2">${formatCurrency(item.price)}</span>
                                         </div>
                                         ${item.features && item.features.length > 0 ? `
                                             <ul class="space-y-3">
@@ -449,10 +444,27 @@
 
         // --- ADMIN LOGIC ---
         // Formata input para R$ automaticamente
+        // 1. Formata um NÚMERO do banco para TEXTO (Visualização)
+        // Ex: recebe 1500.5 -> retorna "R$ 1.500,50"
+        function formatCurrency(value) {
+            if (value === null || value === undefined || value === '') return 'R$ 0,00';
+            return parseFloat(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        // 2. Formata o INPUT enquanto você digita (Máscara)
+        // Ex: digita 500 -> vira "R$ 5,00"
         function formatCurrencyInput(input) {
-            let value = input.value.replace(/\D/g, '');
+            let value = input.value.replace(/\D/g, ''); // Remove tudo que não é número
             value = (Number(value) / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
             input.value = value;
+        }
+
+        // 3. Limpa o texto "R$ 1.000,00" para número 1000.00 (Para salvar no banco)
+        function parseCurrencyToNumber(valueString) {
+            if (!valueString) return 0;
+            // Remove R$, pontos e espaços, troca vírgula por ponto
+            let clean = valueString.toString().replace(/[^\d,]/g, '').replace(',', '.');
+            return parseFloat(clean) || 0;
         }
         async function renderServices(container, services) {
             // Função interna para preencher o formulário ao clicar em editar
@@ -466,7 +478,7 @@
                 form.querySelector('input[name="name"]').value = item.name;
                 
                 // Preço (carrega valor)
-                form.querySelector('input[name="price"]').value = item.price;
+                form.querySelector('input[name="price"]').value = formatCurrency(item.price);
                 
                 // Mensagem (carrega ou vazio)
                 form.querySelector('textarea[name="message"]').value = item.message || '';
@@ -483,7 +495,28 @@
 
                 form.querySelector('textarea[name="features"]').value = (item.features || []).join(', ');
             };
-
+                const renderList = (title, items) => {
+                if(items.length === 0) return '';
+                return `
+                    <div class="mb-10">
+                        <h3 class="text-amber-600 text-xs font-bold uppercase tracking-[0.2em] mb-4 pl-1 border-b border-amber-900/30 pb-2 inline-block">${title}</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            ${items.map(p => `
+                                <div class="glass-panel p-5 rounded-xl border border-stone-800 flex items-center justify-between group hover:border-amber-500/30 transition-all">
+                                    <div>
+                                        <p class="text-stone-200 font-bold text-lg">${p.name}</p>
+                                        <p class="text-amber-500 font-bold text-sm tracking-wide">${formatCurrency(p.price)}</p>
+                                    </div>
+                                    <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button onclick='editService(${JSON.stringify(p)})' class="w-10 h-10 rounded-lg bg-stone-800 hover:bg-amber-600 hover:text-white text-stone-400 transition-colors flex items-center justify-center"><i class="ph ph-pencil-simple text-lg"></i></button>
+                                        <button onclick="deleteService('${p.id}')" class="w-10 h-10 rounded-lg bg-stone-800 hover:bg-red-600 hover:text-white text-stone-400 transition-colors flex items-center justify-center"><i class="ph ph-trash text-lg"></i></button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            };
             container.innerHTML = `
                 <div class="space-y-8 animate-in fade-in">
                     <header class="flex flex-col md:flex-row justify-between md:items-end gap-4 border-b border-amber-900/20 pb-6">
@@ -652,10 +685,12 @@
             const features = form.features.value.split(',').map(s => s.trim()).filter(s => s);
             const colorInput = form.querySelector('input[name="color"]:checked');
             const color = colorInput ? colorInput.value : 'amber';
+            const priceRaw = form.price.value;
+            const priceNumber = parseCurrencyToNumber(priceRaw);
 
             const data = {
                 name: form.name.value,
-                price: form.price.value,
+                price: priceNumber, // Salvando como número!
                 type: form.type.value,
                 category: form.category.value,
                 color: color,
@@ -1289,6 +1324,7 @@ window.applyDashFilters = () => {
     </script>
 </body>
 </html>
+
 
 
 
