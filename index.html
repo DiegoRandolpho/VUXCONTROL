@@ -467,7 +467,7 @@
             return parseFloat(clean) || 0;
         }
         async function renderServices(container, services) {
-            // Função interna para preencher o formulário ao clicar em editar
+            // Lógica do Modal de Edição
             window.editService = (item) => {
                 const modal = document.getElementById('service-modal');
                 modal.classList.remove('hidden');
@@ -477,25 +477,24 @@
                 form.querySelector('input[name="id"]').value = item.id;
                 form.querySelector('input[name="name"]').value = item.name;
                 
-                // Preço (carrega valor)
+                // Formata o preço ao abrir o editor
                 form.querySelector('input[name="price"]').value = formatCurrency(item.price);
                 
-                // Mensagem (carrega ou vazio)
                 form.querySelector('textarea[name="message"]').value = item.message || '';
-
                 form.querySelector('select[name="type"]').value = item.type;
                 
                 const catSelect = form.querySelector('select[name="category"]');
                 if(catSelect) catSelect.value = item.category || 'avulso';
                 
-                // Cor (marca o radio button correto)
                 const color = item.color || 'amber';
                 const colorInput = form.querySelector(`input[value="${color}"]`);
                 if(colorInput) colorInput.checked = true;
 
                 form.querySelector('textarea[name="features"]').value = (item.features || []).join(', ');
             };
-                const renderList = (title, items) => {
+
+            // --- AQUI ESTAVA O PROBLEMA: Lógica de Renderização da Lista ---
+            const renderList = (title, items) => {
                 if(items.length === 0) return '';
                 return `
                     <div class="mb-10">
@@ -505,7 +504,9 @@
                                 <div class="glass-panel p-5 rounded-xl border border-stone-800 flex items-center justify-between group hover:border-amber-500/30 transition-all">
                                     <div>
                                         <p class="text-stone-200 font-bold text-lg">${p.name}</p>
+                                        
                                         <p class="text-amber-500 font-bold text-sm tracking-wide">${formatCurrency(p.price)}</p>
+                                    
                                     </div>
                                     <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <button onclick='editService(${JSON.stringify(p)})' class="w-10 h-10 rounded-lg bg-stone-800 hover:bg-amber-600 hover:text-white text-stone-400 transition-colors flex items-center justify-center"><i class="ph ph-pencil-simple text-lg"></i></button>
@@ -517,6 +518,8 @@
                     </div>
                 `;
             };
+
+            // Renderização Principal da Tela
             container.innerHTML = `
                 <div class="space-y-8 animate-in fade-in">
                     <header class="flex flex-col md:flex-row justify-between md:items-end gap-4 border-b border-amber-900/20 pb-6">
@@ -526,7 +529,6 @@
 
                     <div id="service-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
                         <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="toggleServiceForm()"></div>
-                        
                         <div class="relative modal-panel rounded-2xl p-8 w-full max-w-3xl m-4 animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
                              <h3 class="text-white font-heading text-2xl mb-8 border-b border-white/10 pb-4 flex justify-between items-center">
                                 <span>Editor de Serviço</span>
@@ -619,10 +621,10 @@
                         </div>
                     </div>
 
-                    ${renderAdminCategorySection('Eventos', services.filter(s => s.category === 'eventos'))}
-                    ${renderAdminCategorySection('Casamentos', services.filter(s => s.category === 'casamento'))}
-                    ${renderAdminCategorySection('Empresarial', services.filter(s => s.category === 'empresarial'))}
-                    ${renderAdminCategorySection('Avulsos & Adicionais', services.filter(s => !s.category || s.category === 'avulso'))}
+                    ${renderList('Eventos', services.filter(s => s.category === 'eventos'))}
+                    ${renderList('Casamentos', services.filter(s => s.category === 'casamento'))}
+                    ${renderList('Empresarial', services.filter(s => s.category === 'empresarial'))}
+                    ${renderList('Avulsos & Adicionais', services.filter(s => !s.category || s.category === 'avulso'))}
                 </div>
             `;
         }
@@ -1324,6 +1326,7 @@ window.applyDashFilters = () => {
     </script>
 </body>
 </html>
+
 
 
 
