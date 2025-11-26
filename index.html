@@ -352,22 +352,29 @@
         }
 
         async function loadPublicCatalogData() {
+            // Busca dados ordenados
             const { data: services, error } = await supabase.from('services').select('*').order('created_at', { ascending: true });
             const container = document.getElementById('public-catalog-content');
+            
             if(!container) return;
 
-            if (error) { container.innerHTML = `<div class="text-center text-red-400 p-8 glass-panel rounded-xl">Erro: ${error.message}</div>`; return; }
+            if (error) { 
+                container.innerHTML = `<div class="text-center text-red-400 p-8 glass-panel rounded-xl">Erro: ${error.message}</div>`; 
+                return; 
+            }
 
+            // Filtragem
             let filtered = services;
             if(state.catalogFilter !== 'all') {
                 filtered = services.filter(s => s.category === state.catalogFilter);
             }
 
+            // Agrupamento
             const groups = {
                 'eventos': { title: 'Eventos', items: filtered.filter(s => s.category === 'eventos') },
                 'casamento': { title: 'Casamentos', items: filtered.filter(s => s.category === 'casamento') },
                 'empresarial': { title: 'Empresarial', items: filtered.filter(s => s.category === 'empresarial') },
-                'avulso': { title: 'Adicionais & Avulsos', items: filtered.filter(s => s.category === 'avulso') }
+                'avulso': { title: 'Adicionais & Avulsos', items: filtered.filter(s => !s.category || s.category === 'avulso') }
             };
 
             let html = `<div class="space-y-20 animate-in fade-in pb-20">`;
@@ -389,9 +396,17 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             ${group.items.map(item => {
                                 const isPlan = item.type === 'plan';
+                                const color = item.color || 'amber';
+                                
+                                // LÓGICA DA MENSAGEM DO WHATSAPP (ATUALIZADO)
+                                // Se tiver mensagem no banco, usa ela. Se não, usa a padrão.
+                                const defaultMsg = `Olá! Tenho interesse no ${item.name} (${group.title})`;
+                                const finalMsg = item.message && item.message.trim() !== '' ? item.message : defaultMsg;
+                                const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(finalMsg)}`;
+
                                 return `
-                                <div class="relative overflow-hidden glass-card rounded-2xl p-8 group border-t-2 border-t-${item.color || 'amber'}-500/50 flex flex-col h-full hover:border-t-${item.color || 'amber'}-500 transition-all duration-500">
-                                    ${isPlan ? `<div class="absolute -top-20 -right-20 w-40 h-40 bg-${item.color || 'amber'}-500/10 rounded-full blur-[50px] group-hover:bg-${item.color || 'amber'}-500/20 transition-all duration-500"></div>` : ''}
+                                <div class="relative overflow-hidden glass-card rounded-2xl p-8 group border-t-2 border-t-${color}-500/50 flex flex-col h-full hover:border-t-${color}-500 transition-all duration-500">
+                                    ${isPlan ? `<div class="absolute -top-20 -right-20 w-40 h-40 bg-${color}-500/10 rounded-full blur-[50px] group-hover:bg-${color}-500/20 transition-all duration-500"></div>` : ''}
                                     
                                     <div class="mb-6 flex-1 relative z-10">
                                         <h3 class="text-2xl font-bold text-white font-heading mb-3 leading-tight">${item.name}</h3>
@@ -403,7 +418,7 @@
                                             <ul class="space-y-3">
                                                 ${item.features.map(f => `
                                                     <li class="flex items-start gap-3 text-stone-300 text-sm">
-                                                        <i class="ph ph-check-circle text-${item.color || 'amber'}-500 mt-0.5 text-lg shrink-0 drop-shadow-[0_0_5px_rgba(245,158,11,0.3)]"></i> 
+                                                        <i class="ph ph-check-circle text-${color}-500 mt-0.5 text-lg shrink-0 drop-shadow-[0_0_5px_currentColor]"></i> 
                                                         <span class="leading-snug font-medium">${f}</span>
                                                     </li>
                                                 `).join('')}
@@ -411,7 +426,7 @@
                                         ` : ''}
                                     </div>
 
-                                    <a href="https://wa.me/${WHATSAPP_NUMBER}?text=Olá! Tenho interesse no ${item.name} (${group.title})" target="_blank" class="block w-full py-4 btn-gold rounded-xl font-bold text-center uppercase tracking-widest text-xs shadow-lg hover:translate-y-[-2px] transition-transform mt-auto relative z-10">
+                                    <a href="${whatsappLink}" target="_blank" class="block w-full py-4 btn-gold rounded-xl font-bold text-center uppercase tracking-widest text-xs shadow-lg hover:translate-y-[-2px] transition-transform mt-auto relative z-10">
                                         ${isPlan ? 'Contratar' : 'Consultar'}
                                     </a>
                                 </div>
@@ -422,31 +437,46 @@
                 `;
             }
             html += `</div>`;
-            if(filtered.length === 0) html = `<div class="text-center py-20 text-stone-500 italic flex flex-col items-center"><i class="ph ph-magnifying-glass text-4xl mb-2 opacity-50"></i><p>Nenhum serviço encontrado nesta categoria.</p></div>`;
+            
+            if(filtered.length === 0) {
+                html = `<div class="text-center py-20 text-stone-500 italic flex flex-col items-center"><i class="ph ph-magnifying-glass text-4xl mb-2 opacity-50"></i><p>Nenhum serviço encontrado nesta categoria.</p></div>`;
+            }
+            
             container.innerHTML = html;
         }
-
+        
         function filterCatalog(key) { state.catalogFilter = key; render(); }
 
         // --- ADMIN LOGIC ---
-
+        // Formata input para R$ automaticamente
+        function formatCurrencyInput(input) {
+            let value = input.value.replace(/\D/g, '');
+            value = (Number(value) / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            input.value = value;
+        }
         async function renderServices(container, services) {
+            // Função interna para preencher o formulário ao clicar em editar
             window.editService = (item) => {
                 const modal = document.getElementById('service-modal');
-                modal.classList.remove('hidden'); // Remove hidden
-                modal.classList.add('flex');      // Adiciona flex para centralizar
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
                 
                 const form = modal.querySelector('form');
                 form.querySelector('input[name="id"]').value = item.id;
                 form.querySelector('input[name="name"]').value = item.name;
+                
+                // Preço (carrega valor)
                 form.querySelector('input[name="price"]').value = item.price;
+                
+                // Mensagem (carrega ou vazio)
+                form.querySelector('textarea[name="message"]').value = item.message || '';
+
                 form.querySelector('select[name="type"]').value = item.type;
                 
-                // Seleciona a categoria correta se existir o campo
                 const catSelect = form.querySelector('select[name="category"]');
                 if(catSelect) catSelect.value = item.category || 'avulso';
                 
-                // Lógica para marcar o radio button da cor correta
+                // Cor (marca o radio button correto)
                 const color = item.color || 'amber';
                 const colorInput = form.querySelector(`input[value="${color}"]`);
                 if(colorInput) colorInput.checked = true;
@@ -463,13 +493,14 @@
 
                     <div id="service-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
                         <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="toggleServiceForm()"></div>
+                        
                         <div class="relative modal-panel rounded-2xl p-8 w-full max-w-3xl m-4 animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
                              <h3 class="text-white font-heading text-2xl mb-8 border-b border-white/10 pb-4 flex justify-between items-center">
                                 <span>Editor de Serviço</span>
                                 <button type="button" onclick="toggleServiceForm()" class="text-stone-500 hover:text-white transition-colors"><i class="ph ph-x text-2xl"></i></button>
                              </h3>
                              
-                             <form onsubmit="handleServiceSubmit(event)" class="space-y-8">
+                             <form onsubmit="handleServiceSubmit(event)" class="space-y-6">
                                 <input type="hidden" name="id" value="">
                                 
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -478,9 +509,18 @@
                                         <input type="text" name="name" placeholder="Ex: Pacote Pocket" class="input-dark px-4 py-3 rounded-xl w-full text-lg text-white placeholder-stone-600" required>
                                     </div>
                                     <div>
-                                        <label class="text-sm font-medium text-stone-400 mb-2 block">Preço (Texto)</label>
-                                        <input type="text" name="price" placeholder="R$ 300,00" class="input-dark px-4 py-3 rounded-xl w-full text-lg text-amber-400 font-bold placeholder-stone-600" required>
+                                        <label class="text-sm font-medium text-stone-400 mb-2 block">Preço</label>
+                                        <input type="text" name="price" oninput="formatCurrencyInput(this)" placeholder="R$ 0,00" class="input-dark px-4 py-3 rounded-xl w-full text-lg text-amber-400 font-bold placeholder-stone-600" required>
                                     </div>
+                                </div>
+
+                                <div>
+                                    <label class="text-sm font-medium text-stone-400 mb-2 flex justify-between">
+                                        <span>Mensagem Automática (WhatsApp)</span>
+                                        <span class="text-[10px] text-amber-600 font-bold uppercase tracking-wider">Ao clicar em contratar</span>
+                                    </label>
+                                    <textarea name="message" rows="2" placeholder="Ex: Olá! Gostaria de saber mais sobre o Pacote Pocket..." class="input-dark px-4 py-3 rounded-xl w-full resize-none leading-relaxed text-stone-300 border-dashed border-stone-700"></textarea>
+                                    <p class="text-[10px] text-stone-500 mt-1">Se deixar vazio, o sistema usará uma mensagem padrão.</p>
                                 </div>
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -509,94 +549,25 @@
                                 </div>
 
                                 <div>
-                                    <label class="text-sm font-medium text-stone-400 mb-3 flex justify-between">
-                                        <span>Cor de Destaque</span>
-                                        <span class="text-[10px] uppercase tracking-wider text-stone-600 font-bold">Selecione o tom</span>
-                                    </label>
-                                    
+                                    <label class="text-sm font-medium text-stone-400 mb-3 block">Cor de Destaque</label>
                                     <div class="glass-panel p-4 rounded-xl border border-stone-800 bg-[#0c0a09]">
                                         <div class="grid grid-cols-6 sm:grid-cols-8 gap-3 justify-items-center">
-                                            
-                                            <label class="cursor-pointer group relative">
-                                                <input type="radio" name="color" value="amber" class="hidden color-radio" checked>
-                                                <div class="w-8 h-8 rounded-full bg-amber-500 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#f59e0b] transition-all"></div>
-                                            </label>
-
-                                            <label class="cursor-pointer group relative">
-                                                <input type="radio" name="color" value="orange" class="hidden color-radio">
-                                                <div class="w-8 h-8 rounded-full bg-orange-500 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#f97316] transition-all"></div>
-                                            </label>
-
-                                            <label class="cursor-pointer group relative">
-                                                <input type="radio" name="color" value="red" class="hidden color-radio">
-                                                <div class="w-8 h-8 rounded-full bg-red-600 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#dc2626] transition-all"></div>
-                                            </label>
-
-                                            <label class="cursor-pointer group relative">
-                                                <input type="radio" name="color" value="rose" class="hidden color-radio">
-                                                <div class="w-8 h-8 rounded-full bg-rose-500 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#f43f5e] transition-all"></div>
-                                            </label>
-
-                                            <label class="cursor-pointer group relative">
-                                                <input type="radio" name="color" value="fuchsia" class="hidden color-radio">
-                                                <div class="w-8 h-8 rounded-full bg-fuchsia-600 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#c026d3] transition-all"></div>
-                                            </label>
-
-                                            <label class="cursor-pointer group relative">
-                                                <input type="radio" name="color" value="purple" class="hidden color-radio">
-                                                <div class="w-8 h-8 rounded-full bg-purple-600 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#9333ea] transition-all"></div>
-                                            </label>
-
-                                            <label class="cursor-pointer group relative">
-                                                <input type="radio" name="color" value="violet" class="hidden color-radio">
-                                                <div class="w-8 h-8 rounded-full bg-violet-600 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#7c3aed] transition-all"></div>
-                                            </label>
-
-                                            <label class="cursor-pointer group relative">
-                                                <input type="radio" name="color" value="indigo" class="hidden color-radio">
-                                                <div class="w-8 h-8 rounded-full bg-indigo-500 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#6366f1] transition-all"></div>
-                                            </label>
-
-                                            <label class="cursor-pointer group relative">
-                                                <input type="radio" name="color" value="blue" class="hidden color-radio">
-                                                <div class="w-8 h-8 rounded-full bg-blue-500 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#3b82f6] transition-all"></div>
-                                            </label>
-
-                                            <label class="cursor-pointer group relative">
-                                                <input type="radio" name="color" value="cyan" class="hidden color-radio">
-                                                <div class="w-8 h-8 rounded-full bg-cyan-500 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#06b6d4] transition-all"></div>
-                                            </label>
-
-                                            <label class="cursor-pointer group relative">
-                                                <input type="radio" name="color" value="teal" class="hidden color-radio">
-                                                <div class="w-8 h-8 rounded-full bg-teal-500 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#14b8a6] transition-all"></div>
-                                            </label>
-
-                                            <label class="cursor-pointer group relative">
-                                                <input type="radio" name="color" value="emerald" class="hidden color-radio">
-                                                <div class="w-8 h-8 rounded-full bg-emerald-500 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#10b981] transition-all"></div>
-                                            </label>
-                                            
-                                            <label class="cursor-pointer group relative">
-                                                <input type="radio" name="color" value="green" class="hidden color-radio">
-                                                <div class="w-8 h-8 rounded-full bg-green-500 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#22c55e] transition-all"></div>
-                                            </label>
-                                            
-                                            <label class="cursor-pointer group relative">
-                                                <input type="radio" name="color" value="lime" class="hidden color-radio">
-                                                <div class="w-8 h-8 rounded-full bg-lime-500 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#84cc16] transition-all"></div>
-                                            </label>
-
-                                            <label class="cursor-pointer group relative">
-                                                <input type="radio" name="color" value="stone" class="hidden color-radio">
-                                                <div class="w-8 h-8 rounded-full bg-stone-500 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#78716c] transition-all"></div>
-                                            </label>
-                                            
-                                            <label class="cursor-pointer group relative">
-                                                <input type="radio" name="color" value="slate" class="hidden color-radio">
-                                                <div class="w-8 h-8 rounded-full bg-slate-500 border-2 border-transparent group-hover:scale-110 group-hover:shadow-[0_0_10px_#64748b] transition-all"></div>
-                                            </label>
-
+                                            <label class="cursor-pointer group relative"><input type="radio" name="color" value="amber" class="hidden color-radio" checked><div class="w-8 h-8 rounded-full bg-amber-500 border-2 border-transparent group-hover:scale-110 transition-all"></div></label>
+                                            <label class="cursor-pointer group relative"><input type="radio" name="color" value="orange" class="hidden color-radio"><div class="w-8 h-8 rounded-full bg-orange-500 border-2 border-transparent group-hover:scale-110 transition-all"></div></label>
+                                            <label class="cursor-pointer group relative"><input type="radio" name="color" value="red" class="hidden color-radio"><div class="w-8 h-8 rounded-full bg-red-600 border-2 border-transparent group-hover:scale-110 transition-all"></div></label>
+                                            <label class="cursor-pointer group relative"><input type="radio" name="color" value="rose" class="hidden color-radio"><div class="w-8 h-8 rounded-full bg-rose-500 border-2 border-transparent group-hover:scale-110 transition-all"></div></label>
+                                            <label class="cursor-pointer group relative"><input type="radio" name="color" value="fuchsia" class="hidden color-radio"><div class="w-8 h-8 rounded-full bg-fuchsia-600 border-2 border-transparent group-hover:scale-110 transition-all"></div></label>
+                                            <label class="cursor-pointer group relative"><input type="radio" name="color" value="purple" class="hidden color-radio"><div class="w-8 h-8 rounded-full bg-purple-600 border-2 border-transparent group-hover:scale-110 transition-all"></div></label>
+                                            <label class="cursor-pointer group relative"><input type="radio" name="color" value="violet" class="hidden color-radio"><div class="w-8 h-8 rounded-full bg-violet-600 border-2 border-transparent group-hover:scale-110 transition-all"></div></label>
+                                            <label class="cursor-pointer group relative"><input type="radio" name="color" value="indigo" class="hidden color-radio"><div class="w-8 h-8 rounded-full bg-indigo-500 border-2 border-transparent group-hover:scale-110 transition-all"></div></label>
+                                            <label class="cursor-pointer group relative"><input type="radio" name="color" value="blue" class="hidden color-radio"><div class="w-8 h-8 rounded-full bg-blue-500 border-2 border-transparent group-hover:scale-110 transition-all"></div></label>
+                                            <label class="cursor-pointer group relative"><input type="radio" name="color" value="cyan" class="hidden color-radio"><div class="w-8 h-8 rounded-full bg-cyan-500 border-2 border-transparent group-hover:scale-110 transition-all"></div></label>
+                                            <label class="cursor-pointer group relative"><input type="radio" name="color" value="teal" class="hidden color-radio"><div class="w-8 h-8 rounded-full bg-teal-500 border-2 border-transparent group-hover:scale-110 transition-all"></div></label>
+                                            <label class="cursor-pointer group relative"><input type="radio" name="color" value="emerald" class="hidden color-radio"><div class="w-8 h-8 rounded-full bg-emerald-500 border-2 border-transparent group-hover:scale-110 transition-all"></div></label>
+                                            <label class="cursor-pointer group relative"><input type="radio" name="color" value="green" class="hidden color-radio"><div class="w-8 h-8 rounded-full bg-green-500 border-2 border-transparent group-hover:scale-110 transition-all"></div></label>
+                                            <label class="cursor-pointer group relative"><input type="radio" name="color" value="lime" class="hidden color-radio"><div class="w-8 h-8 rounded-full bg-lime-500 border-2 border-transparent group-hover:scale-110 transition-all"></div></label>
+                                            <label class="cursor-pointer group relative"><input type="radio" name="color" value="stone" class="hidden color-radio"><div class="w-8 h-8 rounded-full bg-stone-500 border-2 border-transparent group-hover:scale-110 transition-all"></div></label>
+                                            <label class="cursor-pointer group relative"><input type="radio" name="color" value="slate" class="hidden color-radio"><div class="w-8 h-8 rounded-full bg-slate-500 border-2 border-transparent group-hover:scale-110 transition-all"></div></label>
                                         </div>
                                     </div>
                                 </div>
@@ -688,15 +659,17 @@
                 type: form.type.value,
                 category: form.category.value,
                 color: color,
-                features: features
+                features: features,
+                message: form.message.value // Captura a mensagem personalizada
             };
+            
             if(id) await supabase.from('services').update(data).eq('id', id);
             else await supabase.from('services').insert([data]);
             
-            // Close modal after submit
             toggleServiceForm();
             renderTabContent();
         }
+        
         async function deleteService(id) {
             if(confirm('Deletar?')) { await supabase.from('services').delete().eq('id', id); renderTabContent(); }
         }
@@ -1316,6 +1289,7 @@ window.applyDashFilters = () => {
     </script>
 </body>
 </html>
+
 
 
 
